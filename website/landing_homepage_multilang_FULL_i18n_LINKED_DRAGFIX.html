@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>轻量记一笔 · Lightweight Note — 高保真落地页（拖动小鸽子版）</title>
+<meta content="轻量记一笔：30 秒内完成记账。本地优先、可撤回与导出。将“拖动手柄”改为“拖动小鸽子”：以圆心为原点，超过阈值触发新增。" name="description"/>
+<style>
+    :root{
+      --brand:#111111; --brand-2:#2b2b2b; --ink:#111111; --muted:#a1a1aa;
+      --bg:#0b0b0b; --paper:#ffffff; --card:#0f172a; --line:#e5e5e5;
+      --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.15);
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100%  padding-top:60px;}
+    body{ margin:0; font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Arial; color:var(--ink); background:#f8fafc }
+    a{ color:var(--brand); text-decoration:none }
+    .container{ width:min(1100px, 92%); margin:0 auto }
+
+    /* Navbar */
+    .nav{ position:fixed; top:0; z-index:9999; backdrop-filter:saturate(1.2) blur(8px);
+      background:rgba(255,255,255,.7); border-bottom:1px solid #e9eef5;  left:0; right:0; width:100%; position:fixed; top:0; left:0; right:0; width:100%; z-index:9999; }
+    .nav .inner{ display:flex; align-items:center; justify-content:space-between; padding:12px 0 }
+    .brand{ display:flex; align-items:center; gap:10px }
+    .logo{ width:36px; height:36px; border-radius:10px;
+      background:radial-gradient(circle at 30% 30%, #ffffff 0 30%, #eeeeee 35%, #bbbbbb 60%, #444444 100%);
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.8); position:relative; }
+    .logo::after{ content:""; position:absolute; inset:6px 6px 12px 8px;
+      background:conic-gradient(from 180deg at 60% 40%, #fff 0 25%, #0000 0 100%), radial-gradient(circle at 65% 45%, #222 3px, #0000 4px);
+      border-radius:12px 14px 14px 12px; box-shadow:0 0 0 2px rgba(255,255,255,.6) inset; }
+    .brand h1{ margin:0; font-size:16px; letter-spacing:.3px }
+    .nav a.link{ margin-left:18px; font-weight:600; color:#111111 }
+    .nav a.cta{ margin-left:18px; padding:10px 14px; border-radius:12px; color:#fff; background:linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow:var(--shadow) }
+
+    /* Hero */
+    .hero{ background:radial-gradient(1200px 600px at 80% -200px, #3a3a3a 0, #0b0b0b 50%, #0b0b0b 100%), var(--bg); color:#f5f5f5; padding:72px 0 56px }
+    .hero .grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:40px }
+    .title{ font-size:40px; line-height:1.2; margin:0 0 14px }
+    .subtitle{ color:#bfbfbf; margin:0 0 26px }
+    .btns{ display:flex; gap:14px; flex-wrap:wrap }
+    .btn{ display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:14px; font-weight:700;
+      box-shadow:var(--shadow); border:1px solid rgba(255,255,255,.15); }
+    .btn.primary{ background:linear-gradient(135deg, var(--brand), var(--brand-2)); color:#fff }
+    .btn.ghost{ background:rgba(255,255,255,.08); color:#eaf3ff }
+
+    .device{ border-radius:22px; background:linear-gradient(180deg,#161616,#0b0b0b); border:1px solid rgba(255,255,255,.2);
+      padding:18px; box-shadow:0 20px 50px rgba(0,0,0,.35); }
+    .status{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:14px 0 0 }
+    .card{ background:#161616; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px; color:#ededed }
+    .label{ color:#a1a1aa; font-size:12px }
+    .big{ font-size:22px; font-weight:800; margin-top:6px }
+
+    /* --- New: Radial Pigeon Drag --- */
+    .drag-area{ margin-top:16px; display:flex; align-items:center; gap:16px; color:#a1a1aa }
+    .radial{ position:relative; width:160px; height:160px; border-radius:50%; flex:0 0 auto;
+      background:
+        radial-gradient(circle 54px at 50% 50%, rgba(255,255,255,.08) 0 98%, #0000 100%),
+        conic-gradient(from -90deg, rgba(255,255,255,.34) var(--deg,0deg), rgba(255,255,255,.08) 0);
+      border:1px dashed rgba(255,255,255,.26);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .pigeon{ position:absolute; left:50%; top:50%; width:68px; height:68px; transform:translate(-50%,-50%);
+      cursor:grab; outline:none; -webkit-user-drag:none; user-select:none; touch-action:none;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));
+      background:transparent; border:none; padding:0; }
+    .pigeon:active{ cursor:grabbing }
+    .pigeon svg{ width:100%; height:100% }
+    .pigeon .body{ fill:#f8fafc; stroke:#bfc6d2; stroke-width:2 }
+    .pigeon .wing { fill:#e5e5e5; stroke:#bfc6d2; stroke-width:2; transform-origin: 34px 34px }
+    .pigeon .head { fill:#f8fafc; stroke:#bfc6d2; stroke-width:2 }
+    .pigeon .eye  { fill:#0f172a }
+    .pigeon .beak { fill:#c0c0c0 }
+    .drag-hint{ font-size:12px; line-height:1.4 }
+
+    /* Sections */
+    section{ padding:64px 0; background:#fff }
+    .section-title{ text-align:center; margin:0 0 18px; font-size:28px }
+    .section-sub{ text-align:center; color:#64748b; margin:0 auto 30px; max-width:720px }
+    .features{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px }
+    .feature{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:0 10px 24px rgba(2,6,23,.05) }
+    .feature h3{ margin:10px 0 8px; font-size:18px }
+    .icon{ width:28px; height:28px; border-radius:8px; display:grid; place-items:center; background:linear-gradient(135deg, #f2f2f2, #e1e1e1) }
+
+    .pricing{ display:grid; grid-template-columns:1fr 1fr; gap:16px }
+    .plan{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow:0 12px 28px rgba(2,6,23,.06) }
+    .plan .price{ font-size:34px; font-weight:900; color:var(--brand); margin:8px 0 }
+    .plan ul{ padding-left:18px; color:#334155 }
+
+    .faq{ display:grid; grid-template-columns:1fr 1fr; gap:16px }
+    .qa{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px }
+
+    /* Modal */
+    .overlay{ position:fixed; inset:0; background:rgba(2,6,23,.6); display:none; align-items:center; justify-content:center; z-index:50 }
+    .modal{ width:min(560px,92%); background:#fff; border-radius:18px; border:1px solid var(--line); box-shadow:var(--shadow); padding:16px }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
+    .input, select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid #cbd5e1 }
+    .modal h3{ margin:0 0 10px }
+    .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px }
+    .btn{ display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:14px; font-weight:700; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,.15); }
+    .btn.small{ padding:8px 12px; border-radius:10px; box-shadow:none; border:1px solid #d4e0f2 }
+    .btn.line{ background:#fff; color:var(--brand) }
+    .btn.primary{ background:linear-gradient(135deg, var(--brand), var(--brand-2)); color:#fff }
+
+    /* Footer */
+    footer{ background:var(--brand); color:#eaf3ff; padding:26px 0; margin-top:40px }
+    footer .foot{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap }
+    footer a{ color:#fff; opacity:.85 }
+
+    @media (max-width:900px){ .hero .grid{ grid-template-columns:1fr } .features{ grid-template-columns:1fr 1fr } .pricing,.faq{ grid-template-columns:1fr } }
+    @media (max-width:600px){ .features{ grid-template-columns:1fr } .title{ font-size:32px } }
+  </style>
+<style>
+      .i18n-switch select{ border:1px solid #dcdde3; background:#fff; color:#111; padding:6px 8px; border-radius:10px }
+      .nav .i18n-switch{ margin-left:12px }
+      @media (prefers-color-scheme: dark){
+        .i18n-switch select{ background:#0f172a; color:#e5e7eb; border-color:#303544 }
+      }
+    </style>
+</head>
+<body>
+<div class="nav">
+<div class="container inner">
+<div class="brand"><a href="teaser_bw_splash_whyus_i18n_multilang_LINKED.html" style="color:inherit;text-decoration:none">鸽子金融</a></div>
+<div>
+<a class="link" href="#features">功能</a>
+<a class="link" href="#demo">演示</a>
+<a class="link" href="#pricing">定价</a>
+<a class="link" href="#faq">FAQ</a>
+<a class="cta" href="#demo">立即体验</a>
+</div>
+</div>
+</div>
+<header class="hero">
+<div class="container grid">
+<div>
+<h2 class="title">30 秒内记一笔，<br/>把记账变成一个小习惯</h2>
+<p class="subtitle">本地优先·可撤回与导出·“鸽子模型”微交互：Handle → Intent → Pause → Feedback。<br/>已将<span style="font-weight:700">拖动手柄</span>改为<span style="font-weight:700">拖动小鸽子</span>进入新增。</p>
+<div class="btns">
+<a class="btn primary" href="#demo">打开互动演示</a>
+<a class="btn ghost" href="#features">看看核心功能</a>
+</div>
+</div>
+<div class="device">
+<div class="tiny">Demo · 月度概览</div>
+<div class="status" id="status-cards">
+<div class="card"><div class="label">本月支出</div><div class="big" id="outflow">¥ 1,262.50</div></div>
+<div class="card"><div class="label">本月收入</div><div class="big" id="inflow">¥ 3,200.00</div></div>
+<div class="card"><div class="label">预算剩余</div><div class="big" id="left">¥ 1,737.50</div></div>
+</div>
+<!-- Radial drag area (replaces vertical handle) -->
+<div aria-label="拖动小鸽子进入新增" class="drag-area">
+<div aria-hidden="false" class="radial" id="ring">
+<button aria-label="将小鸽子从圆心拖出以新增" class="pigeon" id="pigeon" role="button" title="拖动小鸽子">
+<svg aria-hidden="true" viewbox="0 0 68 68">
+<ellipse class="body" cx="34" cy="38" rx="18" ry="13"></ellipse>
+<circle class="head" cx="48" cy="29" r="7"></circle>
+<circle class="eye" cx="50" cy="28" r="1.8"></circle>
+<polygon class="beak" points="54,29 60,31 54,33"></polygon>
+<path class="wing" d="M20,38 C26,26 46,26 54,38 C44,40 26,44 20,38 Z"></path>
+<path d="M18,39 L12,42 L18,42 Z" fill="#cbd5e1"></path>
+</svg>
+</button>
+</div>
+<div class="drag-hint">将<b>小鸽子</b>从圆心拖出，达到阈值即触发“新增”</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Features -->
+<section id="features">
+<div class="container">
+<h3 class="section-title">核心功能</h3>
+<p class="section-sub">为“更快的记录、更清晰的反馈、更强的掌控”而设计。</p>
+<div class="features">
+<div class="feature"><div class="icon">✚</div><h3>最少必填</h3><p>金额/类型/分类/日期四要素，一屏完成；备注可选，降低摩擦。</p></div>
+<div class="feature"><div class="icon">🕊️</div><h3>鸽子模型</h3><p>Handle→Intent→Pause→Feedback 的循环，让记账像玩小游戏一样顺手。</p></div>
+<div class="feature"><div class="icon">📊</div><h3>三大指标</h3><p>本月支出/收入/预算剩余，一眼看到位；适时给出轻提醒。</p></div>
+<div class="feature"><div class="icon">🔎</div><h3>流水检索</h3><p>搜索/筛选/CSV 导出，兼顾查账与报销等真实场景。</p></div>
+<div class="feature"><div class="icon">🧠</div><h3>轻量分析</h3><p>分类占比与趋势概览，不堆砌复杂图表，专注决策。</p></div>
+<div class="feature"><div class="icon">🔐</div><h3>本地优先</h3><p>默认本地数据，随时导出/撤回；可选同步，数据掌控在你手里。</p></div>
+</div>
+</div>
+</section>
+<!-- Demo -->
+<section id="demo">
+<div class="container">
+<h3 class="section-title">互动演示（模拟）</h3>
+<p class="section-sub">现支持两种进入方式：<b>拖动小鸽子</b>（上方 Hero 内）或使用下方表单按钮。保存后数据写入本地存储并刷新三大指标。</p>
+<div class="device" style="background:#fff;border:1px solid #e5eaf2;color:#0b1324;">
+<div class="tiny" style="color:#334155">模拟输入</div>
+<div class="row" style="margin-top:8px">
+<input class="input" id="amount" placeholder="金额（正数）"/>
+<select class="input" id="type"><option value="out">支出</option><option value="in">收入</option></select>
+</div>
+<div class="row" style="margin-top:8px">
+<select class="input" id="cat"><option value="餐饮">餐饮</option><option value="交通">交通</option><option value="居住">居住</option><option value="工资">工资</option><option value="其他">其他</option></select>
+<input class="input" id="date" placeholder="YYYY-MM-DD"/>
+</div>
+<input class="input" id="note" placeholder="备注（可选）" style="margin-top:8px"/>
+<div class="actions">
+<button class="btn small line" id="reset">重置</button>
+<button class="btn small primary" id="save">保存到本地存储</button>
+</div>
+<div class="tiny" id="hint" style="color:#0a7a2d; margin-top:8px; display:none">已保存到本地存储 ✅</div>
+</div>
+</div>
+</section>
+<!-- Pricing -->
+<section id="pricing">
+<div class="container">
+<h3 class="section-title">定价（建议稿）</h3>
+<div class="pricing">
+<div class="plan"><h4>Free</h4><div class="price">¥0</div>
+<ul><li>最少必填快速记一笔</li><li>三大指标 &amp; 轻量分析</li><li>本地优先 + CSV/JSON 导出</li></ul>
+</div>
+<div class="plan"><h4>Pro</h4><div class="price">¥12/月</div>
+<ul><li>预算阈值提醒 &amp; 规则自动分类</li><li>多设备同步（可选）</li><li>周期性账目 &amp; 自定义分类</li></ul>
+</div>
+</div>
+</div>
+<div style="text-align:center; margin-top:16px;">
+<a class="btn small" href="subscribe_membership_bw_FULL_i18n_LINKED.html" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none;">
+          查看全部订阅权益 <span style="display:inline-block; transform:translateX(0); transition:transform .25s;">→</span>
+</a>
+</div>
+</section>
+<!-- FAQ -->
+<section id="faq">
+<div class="container">
+<h3 class="section-title">FAQ</h3>
+<div class="faq">
+<div class="qa"><h4>数据会上传吗？</h4><p>默认不会。本地优先，你可以随时导出/删除；后续若开启同步，也会提供明确的授权与关闭入口。</p></div>
+<div class="qa"><h4>为什么是拖动小鸽子？</h4><p>以圆心为原点，拖到阈值触发，仪式感强，误触率低；同时强化“我要记一笔”的意图确认。</p></div>
+</div>
+</div>
+</section>
+<footer>
+<div class="container foot">
+<div class="brand" style="color:#fff"><div aria-hidden="true" class="logo"></div><strong>轻量记一笔 · Lightweight Note</strong></div>
+<div>© 2025 · Demo page for coursework.</div>
+</div>
+</footer>
+<!-- Modal overlay for add entry -->
+<div aria-hidden="true" class="overlay" id="overlay">
+<div aria-labelledby="demoTitle" aria-modal="true" class="modal" role="dialog">
+<h3 id="demoTitle">快速记一笔（演示）</h3>
+<div class="row">
+<input class="input" id="m_amount" placeholder="金额（正数）"/>
+<select class="input" id="m_type"><option value="out">支出</option><option value="in">收入</option></select>
+</div>
+<div class="row" style="margin-top:8px">
+<select class="input" id="m_cat"><option value="餐饮">餐饮</option><option value="交通">交通</option><option value="居住">居住</option><option value="工资">工资</option><option value="其他">其他</option></select>
+<input class="input" id="m_date" placeholder="YYYY-MM-DD"/>
+</div>
+<input class="input" id="m_note" placeholder="备注（可选）" style="margin-top:8px"/>
+<div class="actions">
+<button class="btn small line" id="m_cancel">取消</button>
+<button class="btn small primary" id="m_save">保存</button>
+</div>
+</div>
+</div>
+<script>
+(function(){
+  const $ = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  // Apply a full dictionary to DOM (including cards)
+  function applyDict(d){
+    const navLinks = $$('.nav a.link');
+    navLinks.forEach((a,i)=>{ if(d.nav_links?.[i]) a.textContent = d.nav_links[i]; });
+    const navCta = $('.nav a.cta'); if(navCta && d.nav_cta) navCta.textContent = d.nav_cta;
+
+    if($('header .title') && d.hero?.title) $('header .title').innerHTML = d.hero.title;
+    if($('header .subtitle') && d.hero?.sub) $('header .subtitle').textContent = d.hero.sub;
+
+    if($('#features .section-title') && d.features?.title) $('#features .section-title').textContent = d.features.title;
+    if($('#features .section-sub') && d.features?.sub) $('#features .section-sub').textContent = d.features.sub;
+
+    const cards = $$('#features .feature');
+    cards.forEach((el,i)=>{
+      const item = d.features?.cards?.[i];
+      if(!item) return;
+      const h = el.querySelector('h3'); const p = el.querySelector('p');
+      if(h && item.h) h.textContent = item.h;
+      if(p && item.p) p.textContent = item.p;
+    });
+
+    if($('#demo .section-title') && d.demo?.title) $('#demo .section-title').textContent = d.demo.title;
+    if($('#demo .section-sub') && d.demo?.sub) $('#demo .section-sub').textContent = d.demo.sub;
+    if($('#reset') && d.demo?.reset) $('#reset').textContent = d.demo.reset;
+    if($('#save')  && d.demo?.save)  $('#save').textContent  = d.demo.save;
+    if($('#hint')  && d.demo?.hint)  $('#hint').textContent  = d.demo.hint;
+
+    if($('#pricing .section-title') && d.pricing?.title) $('#pricing .section-title').textContent = d.pricing.title;
+    const planH = $$('#pricing .plan h4'); planH.forEach((h,i)=>{ if(d.pricing?.planH?.[i]) h.textContent = d.pricing.planH[i]; });
+    const prices = $$('#pricing .plan .price'); if(prices.length>1 && d.pricing?.pricePro) prices[1].textContent = d.pricing.pricePro;
+
+    const freeLis = $('#pricing .plan:nth-of-type(1)'); if(freeLis && d.pricing?.freeLis) { const lis = freeLis.querySelectorAll('li'); lis.forEach((li,i)=>{ if(d.pricing.freeLis[i]) li.textContent = d.pricing.freeLis[i]; }); }
+    const proLis  = $('#pricing .plan:nth-of-type(2)'); if(proLis && d.pricing?.proLis)  { const lis = proLis.querySelectorAll('li');  lis.forEach((li,i)=>{ if(d.pricing.proLis[i]) li.textContent  = d.pricing.proLis[i];  }); }
+
+    if($('#pricing a.btn.small') && d.pricing?.benefitsLink) $('#pricing a.btn.small').innerHTML = d.pricing.benefitsLink.replace('→','<span style="display:inline-block; transform:translateX(0); transition:transform .25s;">→</span>');
+
+    if($('#faq .section-title') && d.faq?.title) $('#faq .section-title').textContent = d.faq.title;
+    const qa = $$('#faq .qa'); qa.forEach((x,i)=>{ const item = d.faq?.qa?.[i]; if(!item) return; const h=x.querySelector('h4'), p=x.querySelector('p'); if(h && item.q) h.textContent=item.q; if(p && item.a) p.textContent=item.a; });
+
+    const right = document.querySelector('footer .foot div:last-child'); if(right && d.footer_right) right.textContent = d.footer_right;
+  }
+
+  const DICTS = {
+    zh: null, // zh uses the original HTML texts
+    en: {"nav_links": ["Features", "Demo", "Pricing", "FAQ"], "nav_cta": "Try now", "hero": {"title": "Log a note in 30 seconds.<br/>Turn bookkeeping into one simple action.", "sub": "Local-first · Undo & Export · “Pigeon model” micro‑interaction: Handle → Intent → Pause → Feedback. The vertical handle is replaced with a draggable pigeon that triggers Quick Add."}, "features": {"title": "Key Features", "sub": "Designed for faster capture, clearer feedback, and stronger control.", "cards": [{"h": "Minimal Required", "p": "Amount / Type / Category / Date on a single screen; optional notes reduce friction."}, {"h": "Pigeon Model", "p": "Handle → Intent → Pause → Feedback. A playful loop that keeps the habit."}, {"h": "Three KPIs", "p": "Monthly Outflow / Inflow / Budget Left, surfaced first with gentle nudges."}, {"h": "Search Records", "p": "Search, filter and export CSV to support real‑world workflows like reimbursements."}, {"h": "Light Analysis", "p": "Category split and trend overview. No noisy charts—focus on decisions."}, {"h": "Local‑first", "p": "Data stays on device by default; export/delete anytime. Optional sync later."}]}, "demo": {"title": "Interactive Demo (Simulated)", "sub": "Two ways: drag the pigeon in the hero above, or use the form below. Data is saved locally and KPIs refresh instantly.", "reset": "Reset", "save": "Save to Local", "hint": "Saved to local storage ✅"}, "pricing": {"title": "Pricing (Suggested)", "planH": ["Free", "Pro"], "pricePro": "¥12 / month", "freeLis": ["Minimal Quick Add", "Three KPIs & light analysis", "Local‑first + CSV/JSON export"], "proLis": ["Budget thresholds & rule‑based auto categorisation", "Multi‑device sync (optional)", "Recurring items & custom categories"], "benefitsLink": "View all membership benefits →"}, "faq": {"title": "FAQ", "qa": [{"q": "Will my data be uploaded?", "a": "Not by default. Local‑first. Export/delete anytime. If sync is enabled later, explicit consent and controls are provided."}, {"q": "Why a draggable pigeon?", "a": "Radial drag from the origin with a threshold reduces mis‑triggers and strengthens the intention to “add a note”. "}]}, "footer_right": "© 2025 · Demo page for coursework."},
+    ja: {"nav_links": ["機能", "デモ", "価格", "FAQ"], "nav_cta": "今すぐ試す", "hero": {"title": "30秒でメモを記録。<br/>家計簿をたった1つのアクションに。", "sub": "ローカルファースト・取り消し/エクスポート・「ハトモデル」マイクロインタラクション：ハンドル→意図→間→フィードバック。縦ハンドルの代わりにドラッグできるハトでクイック追加。"}, "features": {"title": "主な機能", "sub": "より速い入力、明確なフィードバック、強いコントロールのために設計。", "cards": [{"h": "最小入力項目", "p": "金額・タイプ・カテゴリ・日付を1画面に。メモは任意で摩擦を減らす。"}, {"h": "ハトモデル", "p": "ハンドル→意図→間→フィードバック。習慣を維持する遊び心あるループ。"}, {"h": "3つのKPI", "p": "月の支出・収入・予算残を最優先で表示。穏やかなナッジ。"}, {"h": "記録の検索", "p": "検索・フィルター・CSVエクスポート。精算など実務に対応。"}, {"h": "ライト分析", "p": "カテゴリ別と傾向の概観。騒がしいグラフなし—意思決定に集中。"}, {"h": "ローカルファースト", "p": "既定で端末内保存。いつでもエクスポート/削除。同期は後から任意。"}]}, "demo": {"title": "インタラクティブ・デモ（模擬）", "sub": "上部のハトをドラッグ、または下のフォームで追加。データはローカル保存され、KPIが即時更新。", "reset": "リセット", "save": "ローカルに保存", "hint": "ローカルに保存しました ✅"}, "pricing": {"title": "価格（提案）", "planH": ["無料", "Pro"], "pricePro": "¥12 / 月", "freeLis": ["最小のクイック追加", "3つのKPIとライト分析", "ローカルファースト＋CSV/JSONエクスポート"], "proLis": ["予算しきい値・ルール分類", "マルチデバイス同期（任意）", "定期項目・カスタムカテゴリ"], "benefitsLink": "会員特典をすべて見る →"}, "faq": {"title": "FAQ", "qa": [{"q": "データはアップロードされますか？", "a": "既定ではありません。ローカルファーストです。いつでもエクスポート/削除可能。同期を有効にする場合は明示的な同意と制御を提供します。"}, {"q": "なぜドラッグできるハト？", "a": "原点からの円形ドラッグ＋閾値により誤作動を減らし、「追加する」という意図を強めます。"}]}, "footer_right": "© 2025 · 授業用デモページ。"},
+    es: {"nav_links": ["Funciones", "Demo", "Precios", "FAQ"], "nav_cta": "Probar ahora", "hero": {"title": "Registra en 30 segundos.<br/>Convierte la contabilidad en una sola acción.", "sub": "Local-first · Deshacer y exportar · Micro‑interacción “modelo paloma”: Manija → Intención → Pausa → Feedback. El asa vertical se reemplaza por una paloma arrastrable que abre el registro rápido."}, "features": {"title": "Funciones clave", "sub": "Diseñado para capturar más rápido, con feedback más claro y mayor control.", "cards": [{"h": "Campos mínimos", "p": "Importe / Tipo / Categoría / Fecha en una sola pantalla; la nota es opcional para reducir fricción."}, {"h": "Modelo Paloma", "p": "Manija → Intención → Pausa → Feedback. Un bucle lúdico que mantiene el hábito."}, {"h": "Tres KPI", "p": "Gasto / Ingreso / Presupuesto restante del mes, mostrados primero con avisos suaves."}, {"h": "Buscar registros", "p": "Busca, filtra y exporta CSV para flujos reales como reembolsos."}, {"h": "Análisis ligero", "p": "Vista de categorías y tendencias. Sin gráficos ruidosos: foco en decisiones."}, {"h": "Local‑first", "p": "Datos en el dispositivo por defecto; exportar/eliminar en cualquier momento. Sincronización opcional."}]}, "demo": {"title": "Demo interactiva (simulada)", "sub": "Dos formas: arrastra la paloma arriba o usa el formulario abajo. Los datos se guardan localmente y los KPI se actualizan al instante.", "reset": "Restablecer", "save": "Guardar localmente", "hint": "Guardado en almacenamiento local ✅"}, "pricing": {"title": "Precios (sugeridos)", "planH": ["Gratis", "Pro"], "pricePro": "¥12 / mes", "freeLis": ["Registro rápido mínimo", "Tres KPI y análisis ligero", "Local‑first + exportación CSV/JSON"], "proLis": ["Umbrales de presupuesto y categorización por reglas", "Sincronización multidispositivo (opcional)", "Recurrentes y categorías personalizadas"], "benefitsLink": "Ver todos los beneficios →"}, "faq": {"title": "FAQ", "qa": [{"q": "¿Se suben mis datos?", "a": "No por defecto. Local‑first. Puedes exportar/eliminar cuando quieras. Si activas la sincronización, habrá consentimiento y controles claros."}, {"q": "¿Por qué una paloma arrastrable?", "a": "El arrastre radial desde el origen con un umbral reduce activaciones falsas y refuerza la intención de “añadir registro”."}]}, "footer_right": "© 2025 · Página demo para el curso."},
+    fr: {"nav_links": ["Fonctions", "Démo", "Tarifs", "FAQ"], "nav_cta": "Essayer", "hero": {"title": "Notez en 30 secondes.<br/>Faites de la compta une seule action.", "sub": "Local‑first · Annuler & Exporter · Micro‑interaction « modèle pigeon » : Poignée → Intention → Pause → Retour. La poignée verticale est remplacée par un pigeon glissable qui ouvre l’ajout rapide."}, "features": {"title": "Fonctionnalités clés", "sub": "Conçu pour une saisie plus rapide, un retour plus clair et plus de contrôle.", "cards": [{"h": "Champs minimaux", "p": "Montant / Type / Catégorie / Date sur un seul écran ; note optionnelle pour réduire la friction."}, {"h": "Modèle Pigeon", "p": "Poignée → Intention → Pause → Retour. Une boucle ludique qui entretient l’habitude."}, {"h": "Trois KPI", "p": "Débit / Crédit / Budget restant du mois mis en avant avec de légers rappels."}, {"h": "Recherche des enregistrements", "p": "Recherche, filtre et export CSV pour les besoins réels (notes de frais, etc.)."}, {"h": "Analyse légère", "p": "Vue par catégories et tendance. Pas de graphiques bruyants — focus sur la décision."}, {"h": "Local‑first", "p": "Données stockées localement par défaut ; export/suppression à tout moment. Synchronisation optionnelle."}]}, "demo": {"title": "Démo interactive (simulée)", "sub": "Deux voies : faites glisser le pigeon en haut, ou utilisez le formulaire ci‑dessous. Données locales, KPI mis à jour instantanément.", "reset": "Réinitialiser", "save": "Enregistrer localement", "hint": "Enregistré en local ✅"}, "pricing": {"title": "Tarifs (suggestion)", "planH": ["Gratuit", "Pro"], "pricePro": "¥12 / mois", "freeLis": ["Ajout rapide minimal", "Trois KPI & analyse légère", "Local‑first + export CSV/JSON"], "proLis": ["Seuils de budget & catégorisation par règles", "Synchronisation multi‑appareils (option)", "Éléments récurrents & catégories personnalisées"], "benefitsLink": "Voir tous les avantages →"}, "faq": {"title": "FAQ", "qa": [{"q": "Mes données sont‑elles envoyées ?", "a": "Par défaut non. Local‑first. Export/suppression à tout moment. Si la synchro est activée, consentement et contrôles explicites."}, {"q": "Pourquoi un pigeon glissable ?", "a": "Le glisser radial depuis l’origine avec seuil réduit les faux déclenchements et renforce l’intention « ajouter ». "}]}, "footer_right": "© 2025 · Page démo de cours."},
+    ko: {"nav_links": ["기능", "데모", "요금", "FAQ"], "nav_cta": "지금 사용", "hero": {"title": "30초 만에 기록.<br/>가계부를 한 번의 액션으로.", "sub": "로컬‑퍼스트 · 실행취소/내보내기 · ‘비둘기 모델’ 마이크로 인터랙션: 핸들→의도→멈춤→피드백. 드래그 가능한 비둘기로 퀵 추가를 엽니다."}, "features": {"title": "핵심 기능", "sub": "더 빠른 입력, 더 선명한 피드백, 더 강한 통제를 위해 설계.", "cards": [{"h": "최소 입력 항목", "p": "금액/유형/카테고리/날짜를 한 화면에. 메모는 선택으로 마찰을 줄임."}, {"h": "비둘기 모델", "p": "핸들→의도→멈춤→피드백. 습관을 유지하는 유쾌한 루프."}, {"h": "세 가지 KPI", "p": "월간 지출/수입/예산 잔액을 우선 노출. 부드러운 너지."}, {"h": "기록 검색", "p": "검색·필터·CSV 내보내기. 실사용(정산 등)에 적합."}, {"h": "라이트 분석", "p": "카테고리 분포와 추세 개요. 시끄러운 그래프 없이 의사결정에 집중."}, {"h": "로컬‑퍼스트", "p": "기본은 기기 저장. 언제든 내보내기/삭제. 동기화는 선택."}]}, "demo": {"title": "인터랙티브 데모(시뮬레이션)", "sub": "위의 비둘기를 드래그하거나 아래 폼을 사용하세요. 데이터는 로컬에 저장되고 KPI가 즉시 갱신됩니다.", "reset": "초기화", "save": "로컬 저장", "hint": "로컬에 저장됨 ✅"}, "pricing": {"title": "요금(제안)", "planH": ["무료", "Pro"], "pricePro": "¥12 / 월", "freeLis": ["최소한의 퀵 추가", "세 가지 KPI와 라이트 분석", "로컬‑퍼스트 + CSV/JSON 내보내기"], "proLis": ["예산 임계치·규칙 기반 분류", "멀티디바이스 동기화(선택)", "반복 항목·사용자 지정 카테고리"], "benefitsLink": "멤버십 혜택 모두 보기 →"}, "faq": {"title": "FAQ", "qa": [{"q": "데이터가 업로드되나요?", "a": "기본적으로 아니요. 로컬‑퍼스트입니다. 언제든 내보내기/삭제 가능. 동기화를 켜면 명시 동의와 제어를 제공합니다."}, {"q": "왜 비둘기를 드래그하나요?", "a": "원점에서의 반경 드래그와 임계치로 오동작을 줄이고 ‘추가’ 의도를 강화합니다."}]}, "footer_right": "© 2025 · 수업용 데모 페이지."}
+  };
+
+  function setLang(lang){
+    document.documentElement.setAttribute('lang', lang);
+    localStorage.setItem('lang', lang);
+    if(lang === 'zh') { location.reload(); return; } // reload to restore exact zh source
+    applyDict(DICTS[lang] || DICTS.en);
+  }
+
+  // Mount selector if missing
+  let sel = document.getElementById('langSel');
+  if(!sel){
+    const wrap = document.querySelector('.nav .inner') || document.querySelector('.nav') || document.body;
+    const node = document.createElement('div'); node.className='i18n-switch';
+    node.innerHTML = '<select id="langSel"><option value="zh">简体中文</option><option value="en">English</option><option value="ja">日本語</option><option value="es">Español</option><option value="fr">Français</option><option value="ko">한국어</option></select>';
+    wrap.appendChild(node); sel = document.getElementById('langSel');
+  }
+  const init = localStorage.getItem('lang') || 'zh';
+  sel.value = init;
+  if(init !== 'zh') { applyDict(DICTS[init] || DICTS.en); }
+  sel.addEventListener('change', e=> setLang(e.target.value));
+})();
+</script>
+<script>
+// ===== Drag Pigeon + Modal + LocalStorage KPI (Fix) =====
+(function(){
+  const $ = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  // --- Elements
+  const ring = $('#ring');
+  const pigeon = $('#pigeon');
+  const wing = $('#pigeon .wing');
+  const overlay = $('#overlay');
+  const m_amount = $('#m_amount'), m_type = $('#m_type'), m_cat = $('#m_cat'), m_date = $('#m_date'), m_note = $('#m_note');
+  const m_cancel = $('#m_cancel'), m_save = $('#m_save');
+  const outflowEl = $('#outflow'), inflowEl = $('#inflow'), leftEl = $('#left');
+
+  // --- Utils
+  function clamp(v,min,max){ return Math.min(Math.max(v,min),max); }
+  function fmt(n){
+    try{
+      return new Intl.NumberFormat('zh-CN', { style:'currency', currency:'CNY' }).format(n);
+    }catch(e){
+      // fallback
+      return '¥ ' + (Math.round(n*100)/100).toLocaleString('zh-CN', {minimumFractionDigits:2});
+    }
+  }
+  function todayStr(){
+    const d = new Date();
+    const m = (d.getMonth()+1+'').padStart(2,'0');
+    const day = (d.getDate()+'').padStart(2,'0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
+  // --- Data
+  function loadRecords(){
+    try{ return JSON.parse(localStorage.getItem('lnote_records')||'[]'); }catch(e){ return []; }
+  }
+  function saveRecords(list){
+    localStorage.setItem('lnote_records', JSON.stringify(list));
+  }
+  function recalc(){
+    const r = loadRecords();
+    let out = 0, inc = 0;
+    r.forEach(x => {
+      const a = Number(x.amount)||0;
+      if(x.type === 'in') inc += a; else out += a;
+    });
+    const budget = 3000; // demo
+    outflowEl.textContent = fmt(out);
+    inflowEl.textContent = fmt(inc);
+    leftEl.textContent = fmt(budget - out);
+  }
+
+  // Set default date
+  if(m_date) m_date.value = todayStr();
+  recalc();
+
+  // --- Modal helpers
+  function openModal(prefill){
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    if(prefill && typeof prefill === 'object'){
+      if('amount' in prefill) m_amount.value = prefill.amount;
+      if('type' in prefill) m_type.value = prefill.type;
+      if('cat' in prefill) m_cat.value = prefill.cat;
+      if('date' in prefill) m_date.value = prefill.date || todayStr();
+      if('note' in prefill) m_note.value = prefill.note;
+    }
+    setTimeout(()=>{ m_amount && m_amount.focus(); }, 50);
+  }
+  function closeModal(){
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  if(m_cancel) m_cancel.addEventListener('click', closeModal);
+  if(overlay) overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
+
+  if(m_save) m_save.addEventListener('click', ()=>{
+    const rec = {
+      amount: Number(m_amount.value||0),
+      type: m_type.value,
+      cat: m_cat.value,
+      date: m_date.value || todayStr(),
+      note: m_note.value||''
+    };
+    if(!rec.amount || rec.amount <= 0){ alert('请输入有效金额'); return; }
+    const list = loadRecords(); list.push(rec); saveRecords(list);
+    recalc();
+    closeModal();
+    const hint = document.getElementById('hint');
+    if(hint){ hint.style.display='block'; setTimeout(()=> hint.style.display='none', 1600); }
+  });
+
+  // --- Drag logic
+  if(pigeon && ring){
+    let dragging = false;
+    let pointerId = null;
+    let start = {x:0,y:0};
+    let center = {x:0,y:0};
+    let radius = 0;
+    let raf = null;
+    let tWing = 0; // wing animation accumulator
+
+    function setupGeom(){
+      const rect = ring.getBoundingClientRect();
+      center = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
+      radius = Math.min(rect.width, rect.height)/2 - 6;
+    }
+    window.addEventListener('resize', setupGeom);
+    setupGeom();
+
+    function setPigeon(dx, dy){
+      pigeon.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    }
+
+    function animateWing(dist){
+      // Simple flap amplitude relative to distance
+      const amp = Math.min(1, dist / radius);
+      tWing += 0.18 + amp*0.12;
+      const swing = Math.sin(tWing) * (6 + 8*amp); // degrees
+      if(wing){
+        wing.style.transform = `rotate(${swing}deg)`;
+      }
+      ring.style.setProperty('--deg', `${Math.round(amp*360)}deg`);
+      if(dragging) raf = requestAnimationFrame(()=> animateWing(dist));
+    }
+
+    function onDown(e){
+      e.preventDefault();
+      dragging = true;
+      pointerId = e.pointerId || 'mouse';
+      pigeon.setPointerCapture && pigeon.setPointerCapture(e.pointerId);
+      setupGeom();
+      onMove(e);
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(()=> animateWing(0));
+    }
+    function onMove(e){
+      if(!dragging) return;
+      const x = e.clientX, y = e.clientY;
+      const dx = x - center.x, dy = y - center.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const max = radius - 6;
+      const ratio = Math.min(1, dist / max);
+      const dxClamped = dx * ratio / (dist || 1) * Math.min(dist, max);
+      const dyClamped = dy * ratio / (dist || 1) * Math.min(dist, max);
+      setPigeon(dxClamped, dyClamped);
+      ring.style.setProperty('--deg', `${Math.round(ratio*360)}deg`);
+      // store on element for up
+      pigeon._last = {dist: dist, ratio: ratio};
+    }
+    function bounceBack(){
+      pigeon.style.transition = 'transform .28s cubic-bezier(.2,.8,.2,1)';
+      setPigeon(0,0);
+      setTimeout(()=>{ pigeon.style.transition = ''; }, 300);
+      cancelAnimationFrame(raf); raf = null;
+      if(wing) wing.style.transform = 'rotate(0deg)';
+      ring.style.setProperty('--deg','0deg');
+    }
+    function onUp(e){
+      if(!dragging) return;
+      dragging = false;
+      const last = pigeon._last || {dist:0, ratio:0};
+      const threshold = 0.52; // 52% of radius
+      if(last.ratio >= threshold){
+        // Trigger add modal with defaults
+        openModal({ type:'out', cat:'餐饮', date: todayStr() });
+        // reset pigeon
+        bounceBack();
+      }else{
+        bounceBack();
+      }
+    }
+
+    pigeon.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+
+    // Touch-action to ensure pointer events travel
+    pigeon.style.touchAction = 'none';
+  }
+
+  // --- Demo form (below) save/reset hooks (ensure wired)
+  const amount = $('#amount'), type = $('#type'), cat = $('#cat'), dateEl = $('#date'), note = $('#note');
+  const resetBtn = $('#reset'), saveBtn = $('#save'), hint = $('#hint');
+  if(dateEl) dateEl.value = todayStr();
+
+  if(resetBtn) resetBtn.addEventListener('click', ()=>{
+    amount.value=''; type.value='out'; cat.value='餐饮'; dateEl.value=todayStr(); note.value=''; hint && (hint.style.display='none');
+  });
+  if(saveBtn) saveBtn.addEventListener('click', ()=>{
+    const rec = { amount: Number(amount.value||0), type: type.value, cat: cat.value, date: dateEl.value || todayStr(), note: note.value||'' };
+    if(!rec.amount || rec.amount <= 0){ alert('请输入有效金额'); return; }
+    const list = loadRecords(); list.push(rec); saveRecords(list); recalc(); if(hint){ hint.style.display='block'; setTimeout(()=> hint.style.display='none', 1600); }
+  });
+})();
+</script>
+</body>
+</html>

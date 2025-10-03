@@ -1,0 +1,1397 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>Pigeon Finance • Mobile Prototype (PRO · USD · Pro Tab)</title>
+<style>
+:root{ 
+  --panel:#1a1a1a; 
+  --card:#1f1f1f; 
+  --muted:#a0a0a0; 
+  --ink:#ffffff; 
+  --ok:#ffffff; 
+  --bad:#ffffff; 
+  --line:#333333; 
+  --accent:#ffffff;
+  --accent-light:#cccccc;
+  --success:#ffffff;
+  --warning:#ffffff;
+  --error:#ffffff;
+  --gradient-primary: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+  --gradient-secondary: linear-gradient(135deg, #cccccc 0%, #999999 100%);
+  --gradient-success: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+  --shadow-light: 0 2px 20px rgba(0,0,0,0.1);
+  --shadow-medium: 0 8px 40px rgba(0,0,0,0.15);
+  --shadow-heavy: 0 20px 60px rgba(0,0,0,0.25);
+  --border-radius: 16px;
+  --border-radius-large: 24px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+*{box-sizing:border-box} html,body{height:100%} 
+body{
+  margin:0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  color:var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.wrapper{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding: 20px;
+  background: 
+    radial-gradient(1200px 900px at 50% -200px, rgba(255,255,255,0.08), rgba(255,255,255,0) 70%),
+    radial-gradient(1000px 800px at 50% 100%, rgba(255,255,255,0.06), rgba(255,255,255,0) 70%);
+}
+.phone{
+  width:390px;
+  height:780px;
+  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 42px;
+  box-shadow: 
+    var(--shadow-heavy),
+    0 0 0 1px rgba(255,255,255,0.08) inset;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  transition: var(--transition);
+}
+.phone:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 25px 80px rgba(0,0,0,0.3),
+    0 0 0 1px rgba(255,255,255,0.12) inset;
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px 16px;
+  color:var(--muted);
+  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background: linear-gradient(135deg, #555, #777);
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+.app-title{
+  margin-left:8px;
+  font-weight:700;
+  color:var(--ink);
+  font-size: 16px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.pro{
+  margin-left:auto;
+  background: var(--gradient-primary);
+  color:#fff;
+  border-radius:999px;
+  padding:4px 12px 5px;
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.5px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.alert{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  padding: 12px 16px;
+  margin: 8px 16px;
+  color: var(--ink);
+  display: none;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+}
+.alert.bad{
+  border-color: var(--bad);
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2) inset, var(--shadow-light);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:16px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kpi{
+  background: linear-gradient(145deg, var(--card), rgba(255,255,255,0.02));
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  padding: 20px 16px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.kpi:hover::before {
+  opacity: 1;
+}
+
+.kpi small{
+  color: var(--muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.kpi strong{
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section{
+  background: linear-gradient(145deg, var(--panel), rgba(255,255,255,0.02));
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin: 16px;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  opacity: 0.3;
+}
+
+.section:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.section h3{
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.progress{
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.progress>em{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.row{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin: 16px 0;
+}
+
+.btn{
+  appearance:none;
+  border: 1px solid var(--line);
+  background: linear-gradient(145deg, var(--card), rgba(255,255,255,0.02));
+  color: var(--ink);
+  border-radius: var(--border-radius);
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-light);
+  position: relative;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+.btn.ghost{
+  background: transparent;
+  border-color: rgba(255,255,255,0.2);
+  color: var(--muted);
+}
+
+.btn.ghost:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--ink);
+}
+
+.btn.primary{
+  background: var(--gradient-primary);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-medium);
+}
+
+.btn.primary:hover {
+  box-shadow: var(--shadow-heavy);
+  transform: translateY(-3px);
+}
+.help{
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.switch{
+  position: relative;
+  width: 52px;
+  height: 30px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  display: inline-block;
+  vertical-align: middle;
+  transition: var(--transition);
+  backdrop-filter: blur(20px);
+}
+
+.switch em{
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fff, #e0e0e0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-light);
+}
+
+.switch.on{
+  background: var(--gradient-primary);
+  border-color: transparent;
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.switch.on em{
+  left: 25px;
+  background: #fff;
+  box-shadow: var(--shadow-medium);
+}
+
+/* Tabs */
+.tabs{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.95));
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+}
+
+.tab{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  font-size: 13px;
+}
+
+.tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: var(--transition);
+}
+
+.tab:hover {
+  color: var(--ink);
+  background: rgba(255,255,255,0.05);
+}
+
+.tab.active{
+  color: var(--ink);
+  background: rgba(255,255,255,0.08);
+}
+
+.tab.active::before {
+  width: 60%;
+}
+.view{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 80px;
+  bottom: 70px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+.view::-webkit-scrollbar {
+  width: 4px;
+}
+
+.view::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.view::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+}
+
+/* Records */
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+}
+
+.table th,
+.table td{
+  border-bottom: 1px solid var(--line);
+  padding: 16px 12px;
+  text-align: left;
+  font-size: 13px;
+  transition: var(--transition);
+}
+
+.table th {
+  background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  color: var(--ink);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+}
+
+.table td {
+  color: var(--muted);
+}
+
+.table tr:hover td {
+  background: rgba(255,255,255,0.02);
+  color: var(--ink);
+}
+
+/* Chart canvas box */
+.chart{
+  height: 180px;
+  background: linear-gradient(145deg, var(--card), rgba(255,255,255,0.02));
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--shadow-light);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.chart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  opacity: 0.3;
+}
+
+/* Pigeon draggable widget */
+.widget{
+  position: absolute;
+  right: 20px;
+  bottom: 100px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  border: 2px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  box-shadow: var(--shadow-heavy);
+  transition: var(--transition);
+  animation: float 3s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.widget:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 25px 50px rgba(255,255,255,0.3);
+}
+
+.widget:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.widget svg{
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  transition: var(--transition);
+}
+
+.widget:hover svg {
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.ring{
+  position: absolute;
+  right: 4px;
+  bottom: 92px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 11px;
+  pointer-events: none;
+  animation: rotate 20s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.mini{
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.badge{
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  transition: var(--transition);
+}
+
+.badge.pro{
+  background: var(--gradient-primary);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-light);
+}
+
+/* Inputs */
+.input, select, textarea{
+  width: 100%;
+  background: linear-gradient(145deg, var(--card), rgba(255,255,255,0.02));
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  color: var(--ink);
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: var(--transition);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-light);
+}
+
+.input:focus, select:focus, textarea:focus{
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1), var(--shadow-light);
+  background: linear-gradient(145deg, var(--card), rgba(255,255,255,0.05));
+}
+
+.chips{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.chip{
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  transition: var(--transition);
+  backdrop-filter: blur(20px);
+}
+
+.chip:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.chip.active{
+  background: var(--gradient-primary);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-light);
+}
+
+/* Loading and entrance animations */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Add entrance animations to main elements */
+.phone {
+  animation: slideInFromTop 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section {
+  animation: slideInFromBottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.section:nth-child(1) { animation-delay: 0.1s; }
+.section:nth-child(2) { animation-delay: 0.2s; }
+.section:nth-child(3) { animation-delay: 0.3s; }
+.section:nth-child(4) { animation-delay: 0.4s; }
+
+.kpi {
+  animation: slideInFromLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.kpi:nth-child(1) { animation-delay: 0.1s; }
+.kpi:nth-child(2) { animation-delay: 0.2s; }
+.kpi:nth-child(3) { animation-delay: 0.3s; }
+
+/* Hover effects for interactive elements */
+.btn, .chip, .tab, .switch {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after, .chip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::after, .chip:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Enhanced focus states */
+.input:focus, select:focus, textarea:focus {
+  animation: pulse 0.3s ease-in-out;
+}
+
+/* Loading shimmer effect for data */
+.loading {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.1) 25%, 
+    rgba(255,255,255,0.2) 50%, 
+    rgba(255,255,255,0.1) 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 10px;
+  }
+  
+  .phone {
+    width: 100%;
+    max-width: 375px;
+    height: 100vh;
+    max-height: 812px;
+    border-radius: 0;
+    padding: 0;
+  }
+  
+  .grid {
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  .kpi {
+    padding: 16px 12px;
+  }
+  
+  .kpi strong {
+    font-size: 20px;
+  }
+  
+  .section {
+    margin: 12px;
+    padding: 16px;
+  }
+  
+  .btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .row {
+    gap: 8px;
+  }
+}
+
+/* Touch feedback */
+.btn, .chip, .tab, .switch, .widget {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.btn:active, .chip:active, .tab:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/* Improved accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --panel: #1a1a1a;
+    --card: #1f1f1f;
+    --muted: #a0a0a0;
+    --ink: #ffffff;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --line: #ffffff;
+    --muted: #ffffff;
+  }
+  
+  .btn, .input, .section, .kpi {
+    border-width: 2px;
+  }
+}
+
+/* Focus indicators for keyboard navigation */
+.btn:focus-visible, .input:focus-visible, .chip:focus-visible, .tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+.view {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text selection on UI elements */
+.btn, .chip, .tab, .switch, .widget {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Improved button states */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn:disabled:hover {
+  transform: none !important;
+  box-shadow: var(--shadow-light);
+}
+
+/* Additional visual enhancements */
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Enhanced glassmorphism effect */
+.section, .kpi, .btn, .input, .table {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Subtle border glow */
+.section:hover, .kpi:hover {
+  box-shadow: 
+    var(--shadow-medium),
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 20px rgba(255,255,255,0.1);
+}
+
+/* Enhanced text shadows for better readability */
+h3, .app-title, .kpi strong {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Improved contrast for better accessibility */
+.table th {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Subtle animation for data updates */
+.kpi strong {
+  transition: all 0.3s ease;
+}
+
+.kpi strong.updated {
+  animation: pulse 0.6s ease-in-out;
+  color: var(--accent);
+}
+
+/* Enhanced focus rings */
+.input:focus, select:focus, textarea:focus {
+  box-shadow: 
+    0 0 0 3px rgba(255,255,255,0.2),
+    var(--shadow-light),
+    0 0 20px rgba(255,255,255,0.1);
+}
+
+/* Improved button press feedback */
+.btn:active {
+  transform: scale(0.98) translateY(1px);
+  box-shadow: var(--shadow-light);
+}
+
+/* Enhanced loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.1) 0%,
+    rgba(255,255,255,0.2) 50%,
+    rgba(255,255,255,0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Subtle hover effects for non-interactive elements */
+.help:hover {
+  color: var(--ink);
+  transition: color 0.3s ease;
+}
+
+/* Enhanced visual hierarchy */
+.section h3::after {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 2px;
+  background: var(--gradient-primary);
+  margin-top: 8px;
+  border-radius: 1px;
+}
+
+/* Improved spacing and typography */
+.help {
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+}
+
+/* Enhanced mobile touch targets */
+@media (max-width: 480px) {
+  .btn, .chip, .tab {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .switch {
+    min-height: 44px;
+    min-width: 60px;
+  }
+}
+</style>
+<style id="bw-theme">
+  /* Black & White theme (readable): no global grayscale, high contrast */
+  :root { color-scheme: light; }
+  html, body { background:#fff !important; color:#0b0b0b !important; font-size:16px !important; line-height:1.6 !important; }
+  body, body * { text-shadow:none !important; box-shadow:none !important; }
+  /* Text */
+  /* Use body default color; avoid forcing all descendants so dark surfaces can keep light text */
+  a, a:visited, a:hover, a:active { color:#000 !important; text-decoration: underline; }
+  small, .muted, .subtle, .helper, .help, .hint { color:#2a2a2a !important; }
+  ::placeholder { color:#444 !important; opacity:1 !important; }
+  /* Surfaces */
+  .phone, .card, .panel, .sheet, .modal, .tabbar, .topbar, .toolbar, .list, .item, .section, .dropdown, .menu, .popup {
+    background:#fff !important; color:#0b0b0b !important; border-color:#000 !important; border-width:2px !important; border-style:solid !important;
+  }
+  /* Dark surface components */
+  .toast { background:#000 !important; color:#fff !important; border:2px solid #000 !important; }
+  input, select, textarea { background:#fff !important; color:#0b0b0b !important; border:2px solid #000 !important; }
+  button, input[type="button"], input[type="submit"], .btn { background:#fff !important; color:#000 !important; border:2px solid #000 !important; }
+  .badge, .chip, .tag { background:#fff !important; color:#000 !important; border:2px solid #000 !important; }
+  .topbar, .toolbar, .tabbar { border-bottom:2px solid #000 !important; }
+  .list .item + .item { border-top:2px solid #000 !important; }
+  /* Media stays grayscale for BW look */
+  img, video, canvas, svg { filter: grayscale(100%) !important; }
+  /* Hide draggable pigeon UI */
+  #widget, #ring { display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="phone">
+    <div class="topbar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span class="app-title">Pigeon Finance</span><span class="pro">PRO</span></div>
+
+    <div id="alert" class="alert"></div>
+
+    <!-- HOME -->
+    <div id="view-home" class="view">
+      <div class="grid">
+        <div class="kpi"><small>Monthly Outflow</small><strong id="kpiOut">$0.00</strong></div>
+        <div class="kpi"><small>Monthly Inflow</small><strong id="kpiIn">$0.00</strong></div>
+        <div class="kpi"><small>Budget Left</small><strong id="kpiLeft">$0.00</strong></div>
+      </div>
+
+      <div class="section">
+        <h3>Today's Grain <span class="mini">(Daily Allowance <span id="dailyCapText">$0.00</span>)</span></h3>
+        <div class="progress" style="margin:8px 0 6px"><em id="dailyBar" style="width:0%"></em></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" onclick="setDailyCap()">Set Daily Cap</button>
+          <button class="btn" onclick="setMonthlyBudget()">Set Monthly Budget</button>
+          <button class="btn" onclick="addIncome()">Add Income</button>
+          <button class="btn primary" onclick="openQuickAdd('out')">Quick Add (Expense)</button>
+          <button class="btn ghost" onclick="openAdvanced()">More (Rules / Recurring / Categories)</button>
+          <button class="btn ghost" onclick="resetDemo()">Reset Demo</button>
+        </div>
+        <div class="help" style="margin-top:8px">Pro enabled: auto categories, recurring items, custom categories, advanced search & CSV export, monthly trend chart. Current monthly budget: <span id="mBudget">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- RECORDS -->
+    <div id="view-records" class="view" style="display:none">
+      <div class="section">
+        <h3>Search & Filters</h3>
+        <div class="row">
+          <input id="qText" class="input" placeholder="Keyword (purpose / note)" style="flex:2">
+          <select id="qCat"><option value="">All Categories</option></select>
+          <select id="qType"><option value="">All Types</option><option value="out">Expense</option><option value="in">Income</option></select>
+          <button class="btn" onclick="applyFilter()">Apply</button>
+          <button class="btn ghost" onclick="resetFilter()">Reset</button>
+          <button class="btn" onclick="exportCSV()">Export CSV</button>
+        </div>
+      </div>
+      <div class="section">
+        <h3>Records</h3>
+        <table class="table" id="recTable">
+          <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Purpose</th><th>Amount</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div id="view-insights" class="view" style="display:none">
+      <div class="section">
+        <h3>Where Did Money Go (This Month)</h3>
+        <canvas id="bar" class="chart"></canvas>
+        <div class="help">Bar chart by category for this month (expenses).</div>
+      </div>
+      <div class="section">
+        <h3>Monthly Trend</h3>
+        <canvas id="line" class="chart"></canvas>
+      </div>
+    </div>
+
+    <!-- PRO TAB -->
+    <div id="view-pro" class="view" style="display:none">
+      <div class="section" style="border-style:dashed">
+        <strong>Student Offer:</strong> subscribe with a verified student email to enjoy <strong>50% off for the first 3 months</strong>. Cancel anytime.
+      </div>
+
+      <div class="section">
+        <h3>Subscription</h3>
+        <div class="row" style="align-items:center">
+          <div id="subSwitch" class="switch on" onclick="toggleSub()"><em></em></div>
+          <span style="font-weight:700">Pigeon Finance Pro</span> <span class="badge pro">Pro</span>
+        </div>
+        <div class="row" style="align-items:center;margin-top:8px">
+          <div id="syncSwitch" class="switch" onclick="toggleSync()"><em></em></div>
+          <span style="font-weight:700">Optional multi-device sync (mock)</span>
+        </div>
+        <div class="help">Note: these toggles are for demo only. No real data is uploaded.</div>
+      </div>
+
+      <div class="section">
+        <h3>Rule-based Auto Category <span class="badge pro">Pro</span></h3>
+        <div class="row">
+          <input id="ruleKey" class="input" placeholder="Contains keyword (e.g., coffee)" style="flex:1.2">
+          <input id="ruleCat" class="input" placeholder="Map to category (e.g., Food)" style="flex:1">
+          <button class="btn" onclick="addRule()">Add Rule</button>
+        </div>
+        <div id="ruleList" class="help" style="margin-top:6px">No rules yet. Example: keyword "coffee" → category "Food".</div>
+      </div>
+
+      <div class="section">
+        <h3>Recurring <span class="badge pro">Pro</span></h3>
+        <div class="row">
+          <input id="rcName" class="input" placeholder="Name (e.g., Rent)" style="flex:1">
+          <input id="rcAmount" class="input" placeholder="Amount" style="width:120px">
+          <select id="rcType"><option value="out">Expense</option><option value="in">Income</option></select>
+          <select id="rcEvery"><option value="monthly">Monthly</option><option value="weekly">Weekly</option></select>
+          <button class="btn" onclick="addRecurring()">Add</button>
+        </div>
+        <div id="rcList" class="help" style="margin-top:6px">No recurring items yet.</div>
+      </div>
+
+      <div class="section">
+        <h3>Custom Categories <span class="badge pro">Pro</span></h3>
+        <div class="row">
+          <input id="newCat" class="input" placeholder="New category (e.g., Study)" style="flex:1">
+          <button class="btn" onclick="addCategory()">Add Category</button>
+        </div>
+        <div id="catList" class="help" style="margin-top:6px">Food · Transport · Entertainment · Rent · Shopping · Study</div>
+      </div>
+    </div>
+
+    <!-- draggable pigeon -->
+    <div class="ring" id="ring">Drag the pigeon to add</div>
+    <div id="widget" class="widget" title="Drag to quick add">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="2">
+        <!-- Enhanced pigeon design -->
+        <defs>
+          <linearGradient id="pigeonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        <!-- Pigeon body -->
+        <path d="M10 32c8-14 20 0 22 4 12 4 20-6 20-6s-5 20-22 24S14 40 14 30" fill="url(#pigeonGradient)" stroke="none" filter="url(#glow)"/>
+        
+        <!-- Eye -->
+        <circle cx="24" cy="26" r="2.5" fill="#000"/>
+        <circle cx="24" cy="26" r="1" fill="#fff"/>
+        
+        <!-- Beak -->
+        <path d="M41 34c-8 10-17 10-22 0" stroke="#000" stroke-linecap="round" stroke-width="1.5"/>
+        
+        <!-- Wing with animation -->
+        <path id="wing" d="M30 36c5 3 9 0 12-2" stroke="#000" stroke-linecap="round" stroke-width="1.5"/>
+        
+        <!-- Tail feathers -->
+        <path d="M14 30c-2 4-1 8 2 10" stroke="#000" stroke-linecap="round" stroke-width="1.5"/>
+        <path d="M16 32c-1 3 0 6 2 7" stroke="#000" stroke-linecap="round" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <!-- tabs -->
+    <div class="tabs">
+      <div class="tab active" data-v="home">Home</div>
+      <div class="tab" data-v="records">Records</div>
+      <div class="tab" data-v="insights">Insights</div>
+      <div class="tab" data-v="pro">Pro</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Constants & helpers =====
+const CUR = '$';
+const fmt = n => CUR + (Number(n)||0).toFixed(2);
+const $ = id => document.getElementById(id);
+function today(){ const d=new Date(); return d.toISOString().slice(0,10); }
+function monthKey(d){ return d.slice(0,7); }
+function weekKey(d){ const dt=new Date(d); const onejan=new Date(dt.getFullYear(),0,1); const week=Math.ceil((((dt-onejan)/86400000)+onejan.getDay()+1)/7); return dt.getFullYear()+"-W"+week; }
+
+// ===== State (v2 namespace) =====
+const N = 'pf_v2_';
+const S = {
+  records: JSON.parse(localStorage.getItem(N+'records')||'[]'),
+  categories: JSON.parse(localStorage.getItem(N+'categories')||'[]'),
+  rules: JSON.parse(localStorage.getItem(N+'rules')||'[]'),
+  recurring: JSON.parse(localStorage.getItem(N+'recurring')||'[]'),
+  budgetDaily: Number(localStorage.getItem(N+'daily')||'0'),
+  budgetMonthly: Number(localStorage.getItem(N+'month')||'0'),
+  lastAuto: localStorage.getItem(N+'lastAuto')||'',
+  subscribed: localStorage.getItem(N+'subscribed')==='1',
+  sync: localStorage.getItem(N+'sync')==='1'
+};
+function persist(){
+  localStorage.setItem(N+'records', JSON.stringify(S.records));
+  localStorage.setItem(N+'categories', JSON.stringify(S.categories));
+  localStorage.setItem(N+'rules', JSON.stringify(S.rules));
+  localStorage.setItem(N+'recurring', JSON.stringify(S.recurring));
+  localStorage.setItem(N+'daily', S.budgetDaily);
+  localStorage.setItem(N+'month', S.budgetMonthly);
+  localStorage.setItem(N+'lastAuto', S.lastAuto);
+  localStorage.setItem(N+'subscribed', S.subscribed?'1':'0');
+  localStorage.setItem(N+'sync', S.sync?'1':'0');
+}
+
+// migrate or seed
+(function migrate(){
+  if(S.records.length) return;
+  const legacy = JSON.parse(localStorage.getItem('pf_records')||'[]');
+  if(legacy.length){
+    S.records = legacy.map(r=>({date:r.date, type:r.type, amount:Number(r.amount)||0, purpose:r.purpose, category:r.category||'Other'}));
+    S.categories = JSON.parse(localStorage.getItem('pf_categories')||'["Food","Transport","Entertainment","Rent","Shopping","Study"]');
+    S.rules = JSON.parse(localStorage.getItem('pf_rules')||'[]');
+    S.recurring = JSON.parse(localStorage.getItem('pf_recurring')||'[]');
+    S.budgetDaily = Number(localStorage.getItem('pf_daily')||'0');
+    S.budgetMonthly = Number(localStorage.getItem('pf_month')||'0');
+  }
+  if(!S.records.length){
+    S.records = [
+      {date: today(), type:'out', amount:12.5, purpose:'Lunch', category:'Food'},
+      {date: today(), type:'out', amount:50, purpose:'Ride', category:'Transport'},
+      {date: today(), type:'in', amount:3200, purpose:'Salary', category:'Income'}
+    ];
+    S.categories = ["Food","Transport","Entertainment","Rent","Shopping","Study","Other"];
+    S.budgetDaily = 65; S.budgetMonthly = 1200; S.subscribed = true;
+  }
+  persist();
+})();
+
+// ===== UI render =====
+function recalc(){
+  const m = monthKey(today());
+  let out=0, inc=0;
+  S.records.forEach(r=>{ if(r.date.startsWith(m)){ const a=Number(r.amount)||0; if(r.type==='out') out+=a; else inc+=a; } });
+  const left = (S.budgetMonthly||0) - out;
+  $('kpiOut').textContent = fmt(out);
+  $('kpiIn').textContent = fmt(inc);
+  $('kpiLeft').textContent = fmt(left);
+  $('mBudget') && ($('mBudget').textContent = fmt(S.budgetMonthly));
+  $('dailyCapText') && ($('dailyCapText').textContent = fmt(S.budgetDaily));
+
+  const todaySpend = S.records.filter(r=> r.type==='out' && r.date===today()).reduce((s,r)=>s+Number(r.amount||0),0);
+  const cap = S.budgetDaily||0;
+  $('dailyBar') && ($('dailyBar').style.width = (cap? Math.min(100, todaySpend/cap*100): (todaySpend?100:0)) + '%');
+  const alertEl = $('alert');
+  if(alertEl){
+    if(cap && todaySpend>cap){
+      alertEl.className='alert bad';
+      alertEl.textContent = `Budget Alert: You've exceeded today's allowance by ${fmt(todaySpend-cap)}.`;
+      alertEl.style.display='block';
+    }else alertEl.style.display='none';
+  }
+
+  renderRecTable(S.records);
+  drawBar(); drawLine();
+  // reflect pro toggles
+  syncSwitchUI(); subSwitchUI();
+}
+
+function renderRecTable(list){
+  const tbody = $('recTable').querySelector('tbody');
+  tbody.innerHTML='';
+  list.slice().reverse().forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${r.date}</td><td>${r.type==='out'?'Expense':'Income'}</td><td>${r.category||''}</td><td>${r.purpose||''}</td><td>${r.type==='out'?'-':''}${fmt(r.amount)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function refreshCategoryUIs(){
+  const box = document.getElementById('chipCats');
+  if(box){ box.innerHTML=''; S.categories.forEach(c=>{ const sp=document.createElement('span'); sp.className='chip'; sp.textContent=c; sp.onclick=()=>{ document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); sp.classList.add('active'); }; box.appendChild(sp); }); }
+  const sel=$('qCat'); if(sel){ sel.innerHTML='<option value="">All Categories</option>'+S.categories.map(c=>`<option>${c}</option>`).join(''); }
+  const cl=$('catList'); if(cl) cl.textContent=S.categories.join(' · ');
+}
+
+// ===== Actions (shared) =====
+function openQuickAdd(type){
+  if(!$('modal')) return; // no modal in this build; quick add opens via prompt? (not used here)
+}
+
+function setDailyCap(){ const v=prompt('Daily cap (number)', S.budgetDaily||0); if(v!==null){ S.budgetDaily=Number(v)||0; persist(); recalc(); } }
+function setMonthlyBudget(){ const v=prompt('Monthly budget (number)', S.budgetMonthly||0); if(v!==null){ S.budgetMonthly=Number(v)||0; persist(); recalc(); } }
+function addIncome(){ const v=prompt('Income amount (number)'); if(!v) return; S.records.push({date:today(), type:'in', amount:Number(v)||0, purpose:'Income', category:'Income'}); persist(); recalc(); }
+
+// Rules
+function addRule(){ const key=$('ruleKey').value.trim(), cat=$('ruleCat').value.trim(); if(!key||!cat) return; S.rules.push({key,cat}); $('ruleKey').value=''; $('ruleCat').value=''; persist(); renderRules(); }
+function renderRules(){
+  const b=$('ruleList'); if(!b) return;
+  b.innerHTML = S.rules.length? '' : 'No rules yet. Example: keyword "coffee" → category "Food".';
+  S.rules.forEach((r,i)=>{ const el=document.createElement('div'); el.textContent=`If purpose contains "${r.key}" → set category "${r.cat}"`; const del=document.createElement('button'); del.className='btn ghost'; del.textContent='Delete'; del.onclick=()=>{ S.rules.splice(i,1); persist(); renderRules(); }; el.appendChild(document.createTextNode(' ')); el.appendChild(del); b.appendChild(el); });
+}
+function autoCategory(p){ const s=(p||'').toLowerCase(); for(const r of S.rules){ if(s.includes(r.key.toLowerCase())) return r.cat; } return ''; }
+
+// Recurring
+function addRecurring(){ const name=$('rcName').value.trim(); const amount=Number($('rcAmount').value||0); const type=$('rcType').value; const every=$('rcEvery').value; if(!name||!amount) return; S.recurring.push({name,amount,type,every,last:''}); $('rcName').value=''; $('rcAmount').value=''; persist(); renderRecurring(); }
+function renderRecurring(){
+  const b=$('rcList'); if(!b) return;
+  b.innerHTML = S.recurring.length? '' : 'No recurring items yet. Example: Rent 1200 / monthly; Salary 3200 / monthly (income).';
+  S.recurring.forEach((r,i)=>{ const el=document.createElement('div'); el.textContent=`${r.name}: ${r.type==='out'?'-':''}${fmt(r.amount)} / ${r.every} (last posted: ${r.last||'none'})`; const trig=document.createElement('button'); trig.className='btn'; trig.textContent='Post Now'; trig.onclick=()=>{ S.records.push({date:today(), type:r.type, amount:r.amount, purpose:r.name, category:(r.type==='out'?'Fixed Expense':'Income')}); r.last=today(); persist(); renderRecurring(); recalc(); }; const del=document.createElement('button'); del.className='btn ghost'; del.textContent='Delete'; del.onclick=()=>{ S.recurring.splice(i,1); persist(); renderRecurring(); }; el.appendChild(document.createTextNode(' ')); el.appendChild(trig); el.appendChild(document.createTextNode(' ')); el.appendChild(del); b.appendChild(el); });
+}
+
+// Categories
+function addCategory(){ const c=$('newCat').value.trim(); if(!c) return; if(!S.categories.includes(c)) S.categories.push(c); $('newCat').value=''; persist(); refreshCategoryUIs(); }
+
+// Filters & CSV
+function applyFilter(){ let list=S.records.slice(); const t=$('qType').value; const c=$('qCat').value; const q=($('qText').value||'').toLowerCase(); if(t) list=list.filter(r=>r.type===t); if(c) list=list.filter(r=>r.category===c); if(q) list=list.filter(r=> (r.purpose||'').toLowerCase().includes(q) || (r.note||'').toLowerCase().includes(q) ); renderRecTable(list); }
+function resetFilter(){ $('qType').value=''; $('qCat').value=''; $('qText').value=''; renderRecTable(S.records); }
+function exportCSV(){ const head=['date','type','category','purpose','amount']; const rows=[head.join(',')].concat(S.records.map(r=>[r.date,r.type,r.category||'',(r.purpose||'').replace(/,/g,' '),r.amount].join(','))); const blob=new Blob([rows.join('\\n')],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='pigeon_records_usd.csv'; a.click(); URL.revokeObjectURL(url); }
+
+// Charts
+function drawBar(){
+  const c=$('bar'),ctx=c.getContext('2d'),w=c.width=c.clientWidth,h=c.height=c.clientHeight; ctx.clearRect(0,0,w,h);
+  const m = monthKey(today()); const map={}; S.records.forEach(r=>{ if(r.type==='out' && r.date.startsWith(m)){ map[r.category]=(map[r.category]||0)+Number(r.amount||0);} });
+  const keys=Object.keys(map); if(!keys.length){ ctx.fillStyle='#cccccc'; ctx.fillText('No data',10,18); return; }
+  const vals=keys.map(k=>map[k]); const max=Math.max(...vals); const barW=(w-40)/keys.length;
+  keys.forEach((k,i)=>{ const v=map[k]; const bh=(h-40)*(v/max); ctx.fillStyle='#ffffff'; ctx.fillRect(20+i*barW, h-20-bh, barW*0.6, bh); ctx.fillStyle='#cccccc'; ctx.fillText(k, 20+i*barW, h-6); });
+}
+function drawLine(){
+  const c=$('line'),ctx=c.getContext('2d'),w=c.width=c.clientWidth,h=c.height=c.clientHeight; ctx.clearRect(0,0,w,h);
+  const months=[...Array(6)].map((_,i)=>{ const d=new Date(); d.setMonth(d.getMonth()-(5-i)); return d.toISOString().slice(0,7); });
+  const sums=months.map(m=> S.records.filter(r=>r.type==='out' && r.date.startsWith(m)).reduce((s,r)=>s+Number(r.amount||0),0));
+  const max=Math.max(1,...sums); const gx=(w-40)/(months.length-1); ctx.strokeStyle='#ffffff'; ctx.beginPath();
+  months.forEach((m,i)=>{ const y=h-20-(h-40)*(sums[i]/max); const x=20+i*gx; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); ctx.fillStyle='#cccccc'; ctx.fillText(m.slice(5), x-6, h-6); }); ctx.stroke();
+}
+
+// Draggable pigeon (open quick add through prompt to keep page compact)
+(function(){
+  const el=$('widget'), ring=$('ring'); let drag=false,sx=0,sy=0;
+  el.addEventListener('pointerdown',e=>{ drag=true; sx=e.clientX; sy=e.clientY; el.setPointerCapture(e.pointerId); el.style.cursor='grabbing'; });
+  el.addEventListener('pointermove',e=>{ if(!drag) return; const dx=e.clientX-sx, dy=e.clientY-sy; el.style.transform=`translate(${dx}px,${dy}px)`; $('wing').setAttribute('d', `M30 36c5 ${3+Math.sin(Date.now()/120)*4} 9 0 12 -2`); const dist=Math.hypot(dx,dy); ring.style.borderColor=dist>52?'#fff':'#444'; });
+  function endDrag(e){ if(!drag) return; drag=false; try{ el.releasePointerCapture(e.pointerId);}catch{}; el.style.cursor='grab'; const m=el.style.transform.match(/translate\\(([-\\d.]+)px,([\-\\d.]+)px\\)/); let dx=0,dy=0; if(m){dx=parseFloat(m[1]);dy=parseFloat(m[2]);} const dist=Math.hypot(dx,dy); el.style.transform='translate(0,0)'; ring.style.borderColor='#444'; if(dist>52){ const v=prompt('Quick Add (expense) amount'); if(v){ const a=Number(v)||0; S.records.push({date:today(), type:'out', amount:a, purpose:'Quick Add', category:autoCategory('Quick Add')||'Other'}); persist(); recalc(); } } }
+  el.addEventListener('pointerup',endDrag); el.addEventListener('pointercancel',endDrag);
+})();
+
+// Pro toggles (mock)
+function subSwitchUI(){ const sw=$('subSwitch'); if(!sw) return; sw.classList.toggle('on', S.subscribed); }
+function syncSwitchUI(){ const sw=$('syncSwitch'); if(!sw) return; sw.classList.toggle('on', S.sync); }
+function toggleSub(){ S.subscribed=!S.subscribed; persist(); subSwitchUI(); }
+function toggleSync(){ S.sync=!S.sync; persist(); syncSwitchUI(); }
+
+// auto recurring
+function autoApplyRecurring(){
+  const t=today(); if(S.lastAuto===t) return;
+  const mon=monthKey(t), wk=weekKey(t);
+  S.recurring.forEach(r=>{ let due=false; if(r.every==='monthly'){ if(!r.last || monthKey(r.last)!==mon) due=true; } else if(r.every==='weekly'){ if(!r.last || weekKey(r.last)!==wk) due=true; } if(due){ S.records.push({date:t, type:r.type, amount:r.amount, purpose:r.name, category:(r.type==='out'?'Fixed Expense':'Income')}); r.last=t; } });
+  S.lastAuto=t; persist();
+}
+
+// reset
+function resetDemo(){ if(confirm('Clear demo data? This will remove local records for this prototype.')){ Object.keys(localStorage).filter(k=>k.startsWith('pf_')).forEach(k=>localStorage.removeItem(k)); Object.keys(localStorage).filter(k=>k.startsWith(N)).forEach(k=>localStorage.removeItem(k)); location.reload(); } }
+
+// tabs
+document.querySelectorAll('.tab').forEach(el=>{
+  el.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    const v=el.dataset.v;
+    document.querySelectorAll('.view').forEach(vw=>vw.style.display='none');
+    $('view-'+v).style.display='block';
+    if(v==='pro'){ renderRules(); renderRecurring(); refreshCategoryUIs(); }
+  };
+});
+
+// init
+function init(){ refreshCategoryUIs(); autoApplyRecurring(); recalc(); }
+init();
+</script>
+</body>
+</html>

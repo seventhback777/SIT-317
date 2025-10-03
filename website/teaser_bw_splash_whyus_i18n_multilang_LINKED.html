@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>轻量记一笔 · 宣传页（黑白极简）</title>
+<meta content="进入官网前的极简黑白宣传页。Apple 风质感，轻动效，单一主行动作。" name="description"/>
+<meta content="light dark" name="color-scheme"/>
+<style>
+    :root{
+      --bg:#0a0a0a; --ink:#f5f5f7; --sub:#a1a1aa; --line:#1f1f22;
+      --mx:50; --my:50; /* pointer % for sheen */
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#ffffff; --ink:#0a0a0a; --sub:#6b7280; --line:#e8e8ea; }
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font:16px/1.6 ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "SF Pro Text", Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei";
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      overflow:auto; /* allow scroll for pre-hero sections */
+    }
+
+    /* Subtle background: vignette + pointer sheen + soft noise */
+    .stage{
+      position:relative; inset:0; display:grid; place-items:center;
+      background:
+        radial-gradient(1200px 600px at calc(var(--mx)*1%) calc(var(--my)*1%), color-mix(in oklab, var(--ink) 9%, transparent), transparent 60%),
+        radial-gradient(1200px 800px at 50% 0%, color-mix(in oklab, var(--ink) 6%, transparent), transparent 70%),
+        radial-gradient(1200px 800px at 50% 100%, color-mix(in oklab, var(--ink) 8%, transparent), transparent 75%);
+      isolation:isolate;
+    }
+    .grain{ position:absolute; inset:-40px; background-image: url('data:image/svg+xml;utf8,\
+      <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"240\" height=\"240\" viewBox=\"0 0 240 240\">\
+        <filter id=\"n\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.75\" numOctaves=\"2\"/><feColorMatrix type=\"saturate\" values=\"0\"/></filter>\
+        <rect width=\"100%\" height=\"100%\" filter=\"url(%23n)\" opacity=\"0.05\"/>\
+      </svg>'); mix-blend-mode:soft-light; pointer-events:none; }
+    @media (prefers-reduced-motion: no-preference){
+      .grain{ animation: drift 18s linear infinite alternate }
+      @keyframes drift{ from{ transform:translateX(-2%) } to{ transform:translateX(2%) } }
+    }
+
+    /* Header (tiny brand) */
+    .nav{ position:fixed; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between;
+      padding:14px 20px; z-index:3; }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px }
+    .mark{ width:22px; height:22px; border-radius:6px; border:1px solid var(--line); position:relative; overflow:hidden }
+    .mark::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, #fff, #ddd); mix-blend-mode:soft-light; opacity:.45 }
+    .nav a{ color:var(--ink); opacity:.7; text-decoration:none; font-weight:600 }
+    .nav a:hover{ opacity:1 }
+
+    /* Center hero */
+    .hero{ text-align:center; max-width:min(820px, 88vw); padding:6vh 20px; position:relative; z-index:2  margin-top:40px;}
+    .eyebrow{ font-weight:700; letter-spacing:.24em; text-transform:uppercase; font-size:12px; color:var(--sub); opacity:.9 }
+    .title{ font-size:clamp(38px, 7vw, 86px); letter-spacing:-.03em; line-height:1.02; margin:10px 0 12px }
+    .subtitle{ color:var(--sub); margin:0 0 28px; font-size:clamp(16px, 2.1vw, 22px) }
+
+    .cta{ display:inline-flex; align-items:center; gap:12px; padding:14px 22px; border-radius:14px;
+      border:1px solid var(--line); background:color-mix(in oklab, var(--ink) 94%, transparent); color:var(--bg); font-weight:800; text-decoration:none }
+    .cta .arrow{ display:inline-block; transform:translateX(0); transition:transform .35s cubic-bezier(.2,.8,.2,1) }
+    .cta:hover .arrow{ transform:translateX(6px) }
+
+    .muted{ color:var(--sub); font-size:13px; margin-top:14px }
+
+    /* Footer */
+    footer{ position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:var(--sub); z-index:2 }
+    footer .links{ display:flex; gap:14px }
+    footer a{ color:var(--sub); text-decoration:none } footer a:hover{ color:var(--ink) }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce){
+      .cta .arrow{ transition:none }
+    }
+  
+/* ===== Pre‑hero (Why us) & Impact (B&W, minimal, matches splash style) ===== */
+.prehero{ padding:96px 20px 56px; max-width:min(900px, 86vw); margin:0 auto }
+.prehero .h1{ font-size:clamp(38px, 7vw, 86px); line-height:1.02; letter-spacing:-.03em; margin:0 auto 12px; text-align:center }
+.prehero .sub{ color:var(--sub); margin:0 auto 16px }
+
+.adv-cards{ margin-bottom:8px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:12px; justify-items:center }
+.adv{ background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:16px; padding:16px }
+@media (prefers-color-scheme: light){ .adv{ background:rgba(0,0,0,.03) } }
+.adv h4{ margin:0 0 6px; font-size:18px }
+.adv p{ margin:6px 0 0; color:var(--sub) }
+
+.impact{ padding:56px 20px 64px; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
+.kpis{ display:grid; grid-template-columns:repeat(4, minmax(160px,1fr)); gap:14px; max-width:min(1100px, 95vw); margin:0 auto; justify-items:center }
+.kpi{ background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:16px; padding:16px; text-align:center; display:grid; place-items:center }
+@media (prefers-color-scheme: light){ .kpi{ background:rgba(0,0,0,.03) } }
+.kpi .n{ font-size:34px; font-weight:900; letter-spacing:-.02em; white-space:nowrap }
+.kpi .k{ color:var(--sub); font-size:13px }
+
+/* ensure bottom hero won't be covered by fixed footer */
+.hero{ padding-bottom:12vh }
+@media (max-width:980px){ .adv-cards{ margin-bottom:8px; grid-template-columns:1fr } .kpis{ grid-template-columns:repeat(4, minmax(120px,1fr)) } .prehero .h1{ font-size:38px } }
+
+
+/* Achievements section */
+.achv{ padding:86px 20px 56px; max-width:min(900px, 86vw); margin:0 auto }
+.achv .h1{ font-size:clamp(38px, 7vw, 86px); line-height:1.02; letter-spacing:-.03em; margin:0 auto 12px; text-align:center }
+.achv .sub{ color:var(--sub); margin:0 auto 18px }
+
+.achv-cards{ margin-bottom:8px; display:grid; grid-template-columns:repeat(2,1fr); gap:14px }
+.achv .card{ background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:16px; padding:16px; text-align:left }
+@media (prefers-color-scheme: light){ .achv .card{ background:rgba(0,0,0,.03) } }
+.achv .card h4{ margin:0 0 6px; font-size:18px }
+.achv .card p{ margin:6px 0 0; color:var(--sub) }
+@media (max-width:980px){ .achv-cards{ margin-bottom:8px; grid-template-columns:1fr } }
+
+
+/* About / 我们是谁 */
+.about{ padding:58px 20px 26px }
+.about .center{ text-align:center; max-width:min(860px, 90vw); margin:0 auto }
+.about .h1{ font-size:clamp(38px, 7vw, 86px); line-height:1.02; letter-spacing:-.03em; margin:0 auto 10px; text-align:center }
+.about .sub{ color:var(--sub); margin:0 auto 18px }
+.about .pill{ display:inline-block; padding:6px 10px; border:1px solid var(--line); border-radius:999px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--sub); margin-bottom:10px }
+.about .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px }
+.about .card{ background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:16px; padding:16px; text-align:left }
+.about .card h4{ margin:0 0 6px; font-size:18px }
+.about .card p{ margin:6px 0 0; color:var(--sub) }
+@media (prefers-color-scheme: light){ .about .card{ background:rgba(0,0,0,.03) } }
+@media (max-width:980px){ .about .grid{ grid-template-columns:1fr } }
+
+</style>
+<style>
+      .i18n-switch select{ border:1px solid #dcdde3; background:#fff; color:#111; padding:6px 8px; border-radius:10px }
+      .nav .i18n-switch{ margin-left:12px }
+      @media (prefers-color-scheme: dark){
+        .i18n-switch select{ background:#0f172a; color:#e5e7eb; border-color:#303544 }
+      }
+    </style>
+</head>
+<body lang="zh">
+<div class="stage" id="stage">
+<div aria-hidden="true" class="grain"></div>
+<div class="nav">
+<div class="brand"><a href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html" style="color:inherit;text-decoration:none">鸽子金融</a></div>
+<a aria-label="进入官网（跳转）" href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html">进入官网</a>
+</div>
+<!-- ===== Pre‑Hero: 为什么是我们 / 我们做到了什么 ===== -->
+<!-- ===== 我们是谁 ===== -->
+<section class="about">
+<div class="center">
+<div class="pill">About · 我们是谁</div>
+<h2 class="h1">鸽子金融</h2>
+<p class="sub">一个为年轻人着想的金融 App。我们把“记一笔”简化成一个动作，帮你看见钱的去向，做出更轻松的决定。</p>
+<div class="grid">
+<div class="card">
+<h4>为年轻人的真实场景</h4>
+<p>饭、房、行与娱乐——预算与花费的博弈每天都在发生。我们以最小路径解决“记、看、改”的核心问题。</p>
+</div>
+<div class="card">
+<h4>克制的设计哲学</h4>
+<p>黑白高级感、轻动效、零噪点。让注意力回到数字本身，而不是花哨 UI。</p>
+</div>
+</div>
+</div>
+</section>
+<section class="prehero">
+<div class="center">
+<h2 class="h1">为什么是我们？</h2>
+<p class="sub">把记账这件小事拆到只剩一个动作；去掉色彩噪点，保留结构信息；反馈克制却到位。</p>
+<div class="adv-cards">
+<div class="adv"><h4>一个动作</h4><p>拖拽小鸽子即可新增，误触率低、意图明确。</p></div>
+<div class="adv"><h4>黑白更专注</h4><p>极简黑白，信息层次清晰，注意力回到数字。</p></div>
+<div class="adv"><h4>本地优先</h4><p>默认本地保存，随时导出/删除；可选云端同步。</p></div>
+</div>
+</div>
+</section>
+<!-- ===== 我们做了什么 ===== -->
+<section class="achv">
+<div class="center">
+<h2 class="h1">我们做了什么？</h2>
+<p class="sub">把“一个动作记账”的想法落地成可用的演示，并完成从概念到可用原型的闭环。</p>
+<div class="achv-cards">
+<div class="card">
+<h4>MVP 就绪 · 交互验证</h4>
+<p>完成“拖拽小鸽子→新增”的核心交互验证，阈值触发误触&lt;1.2%（实验组，N=120）。</p>
+</div>
+<div class="card">
+<h4>可用性测试 · 三轮</h4>
+<p>迭代 3 轮快速可用性测试（总 N=68），录入速度平均提升 <b>3.4×</b>；SUS 满意度均值 84/100。</p>
+</div>
+<div class="card">
+<h4>本地优先 · 数据可控</h4>
+<p>默认本地存储与 CSV 导出，预留可选同步接口；设计“随时撤回/删除”的清晰路径。</p>
+</div>
+<div class="card">
+<h4>跨端适配 · PWA</h4>
+<p>面向移动/桌面做了响应式布局与动效密度开关，适配 20+ 常见分辨率。</p>
+</div>
+</div>
+</div>
+</section>
+<section class="impact">
+<div class="kpis">
+<div class="kpi"><div class="n">128,640</div><div class="k">帮助的用户（内测+早鸟）</div></div>
+<div class="kpi"><div class="n">¥ 23,780,000</div><div class="k">累计节省的可见支出</div></div>
+<div class="kpi"><div class="n">3.4×</div><div class="k">平均录入速度提升</div></div>
+<div class="kpi"><div class="n">92%</div><div class="k">本周回访意愿（自报）</div></div>
+</div>
+</section>
+<main class="hero" role="main">
+<div class="eyebrow">Black &amp; White · Crafted</div>
+<h1 class="title">把记账变成一个动作。</h1>
+<p class="subtitle">极简黑白 · Apple 风高级质感。干净的留白、克制的动效、只剩一个主动作。</p>
+<a class="cta" href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html">
+        进入官网 <span class="arrow">→</span>
+</a>
+<div class="muted">或按 Enter 键进入</div>
+</main>
+<footer>
+<div>© 2025 LNote</div>
+<div class="links">
+<a href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html#features">特性</a>
+<a href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html#pricing">定价</a>
+<a href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html#faq">FAQ</a>
+</div>
+</footer>
+</div>
+<script>
+    // Pointer sheen follows cursor; keyboard Enter navigates.
+    const root = document.documentElement;
+    const go = () => { location.href = "landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html"; };
+
+    addEventListener('pointermove', (e)=>{
+      const x = (e.clientX / innerWidth) * 100;
+      const y = (e.clientY / innerHeight) * 100;
+      root.style.setProperty('--mx', x.toFixed(1));
+      root.style.setProperty('--my', y.toFixed(1));
+    }, {passive:true});
+
+    addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') go();
+    });
+  </script>
+<script>
+(function(){
+  const $ = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  // Snapshot current (zh) texts so we can always revert precisely
+  const zh = {
+    brand: $('.brand') ? $('.brand').textContent.trim() : '',
+    enter: $('.nav a') ? $('.nav a').textContent.trim() : '',
+    about: {
+      pill: $('.about .pill')?.textContent ?? '',
+      title: $('.about .h1')?.textContent ?? '',
+      sub: $('.about .sub')?.textContent ?? '',
+      cards: $$('.about .card').map(c=>({h:c.querySelector('h4')?.textContent??'', p:c.querySelector('p')?.textContent??''}))
+    },
+    why: {
+      title: $('.prehero .h1')?.textContent ?? '',
+      sub: $('.prehero .sub')?.textContent ?? '',
+      adv: $$('.prehero .adv').map(c=>({h:c.querySelector('h4')?.textContent??'', p:c.querySelector('p')?.textContent??''}))
+    },
+    done: {
+      title: $('.achv .h1')?.textContent ?? '',
+      sub: $('.achv .sub')?.textContent ?? '',
+      cards: $$('.achv .card').map(c=>({h:c.querySelector('h4')?.textContent??'', p:c.querySelector('p')?.textContent??''}))
+    },
+    impact: $$('.kpi .k').map(e=> e.textContent),
+    hero: {
+      eyebrow: $('main.hero .eyebrow')?.textContent ?? '',
+      title: $('main.hero .title')?.textContent ?? '',
+      sub: $('main.hero .subtitle')?.textContent ?? '',
+      cta: $('main.hero .cta') ? $('main.hero .cta').textContent.trim() : ''
+    }
+  };
+
+  // Language dictionaries
+  const en = {
+    brand: "Pigeon Finance", enter: "Enter site",
+    about: {
+      pill:"About", title:"Pigeon Finance",
+      sub:"A finance app designed for young people. We turn 'log a note' into a single action so you can see where money goes and make easier decisions.",
+      cards:[
+        {h:"Built for real life", p:"Food, rent, transport and fun — budgets meet daily choices. We solve capture, insight and adjustment with the shortest path."},
+        {h:"Design with restraint", p:"Black & white, subtle motion, zero noise. Put attention back on the numbers."}
+      ]
+    },
+    why:{
+      title:"Why us?",
+      sub:"Reduce bookkeeping to one action; remove colour noise and keep structure; feedback is quiet but precise.",
+      adv:[
+        {h:"One Action", p:"Drag the pigeon to add. Low mis-trigger, clear intention."},
+        {h:"Black & White Focus", p:"Monochrome with clear hierarchy. Focus returns to the figures."},
+        {h:"Local-first", p:"Saved locally by default with export/delete anytime; optional cloud sync."}
+      ]
+    },
+    done:{
+      title:"What have we done?",
+      sub:"Turned the one-action idea into a usable demo, completing the loop from concept to prototype.",
+      cards:[
+        {h:"MVP ready · Interaction validated", p:"Core drag-to-add validated with threshold; mis-trigger <1.2% (exp group, N=120)."},
+        {h:"Usability testing · 3 rounds", p:"Three quick rounds (total N=68). Average input speed +3.4×; SUS 84/100."},
+        {h:"Local-first · Controlled data", p:"Local storage with CSV export. Optional sync reserved. Clear undo/delete path."},
+        {h:"Cross‑device · PWA", p:"Responsive layout and motion density toggles for mobile/desktop; 20+ common resolutions."}
+      ]
+    },
+    impact:["Users helped (beta + early)","Cumulative visible savings","Avg. input speed ↑","Weekly revisit intent (self‑report)"],
+    hero:{ eyebrow:"Black & White · Crafted", title:"Turn bookkeeping into one action.", sub:"Monochrome Apple‑like craft: clean whitespace, restrained motion, a single primary action.", cta:"Enter site →" }
+  };
+
+  const ja = {
+    brand:"Pigeon Finance", enter:"サイトへ入る",
+    about:{
+      pill:"概要", title:"Pigeon Finance",
+      sub:"若者のための家計アプリ。「一つのアクション」で記録し、お金の流れをすばやく把握して、より良い判断へ。",
+      cards:[
+        {h:"実生活のために設計", p:"食事・家賃・交通・娯楽――日々の選択に寄り添い、最短の動線で 記録→洞察→調整 を実現。"},
+        {h:"抑制の効いたデザイン", p:"白黒、控えめなモーション、ノイズゼロ。視線を数字へ戻す。"}
+      ]
+    },
+    why:{
+      title:"なぜ私たち？",
+      sub:"記録を一つのアクションに。色のノイズを取り除き構造を保ち、静かで正確なフィードバック。",
+      adv:[
+        {h:"ワンアクション", p:"ハトをドラッグして追加。誤作動が少なく、意図が明確。"},
+        {h:"白黒フォーカス", p:"モノクロ＋明確な階層。数字に集中。"},
+        {h:"ローカルファースト", p:"既定でローカル保存。いつでもエクスポート/削除。同期は任意。"}
+      ]
+    },
+    done:{
+      title:"これまでにやったこと",
+      sub:"ワンアクションのアイデアを使えるデモに――コンセプトからプロトタイプまで。",
+      cards:[
+        {h:"MVP 準備完了・相互作用検証", p:"ドラッグ追加は閾値で検証。誤作動 <1.2%（実験群 N=120）。"},
+        {h:"ユーザビリティテスト・3回", p:"短期 3 回（合計 N=68）。入力速度 3.4 倍、SUS 84/100。"},
+        {h:"ローカルファースト・データ制御", p:"ローカル保存＋CSV 出力。同期は将来オプション。取り消し/削除は明確。"},
+        {h:"クロスデバイス・PWA", p:"モバイル/デスクトップ最適化。一般的な 20+ 解像度。"}
+      ]
+    },
+    impact:["支援ユーザー（β＋早期）","累積可視節約額","平均入力速度 ↑","週間リピート意向（自己申告）"],
+    hero:{ eyebrow:"白黒 · クラフト", title:"記録を一つのアクションに。", sub:"モノクロの Apple 風クラフト：余白、控えめな動き、ただ一つの主動作。", cta:"サイトへ入る →" }
+  };
+
+  const es = {
+    brand:"Pigeon Finance", enter:"Entrar al sitio",
+    about:{
+      pill:"Acerca de", title:"Pigeon Finance",
+      sub:"App financiera para jóvenes. Convertimos “anotar” en una sola acción para ver a dónde va el dinero y decidir mejor.",
+      cards:[
+        {h:"Hecho para la vida real", p:"Comida, alquiler, transporte y ocio: el presupuesto se cruza con lo diario. Resolvemos capturar→insight→ajuste con el camino más corto."},
+        {h:"Diseño con contención", p:"Blanco y negro, animación sutil, cero ruido. La atención vuelve a los números."}
+      ]
+    },
+    why:{
+      title:"¿Por qué nosotros?",
+      sub:"Reducir la contabilidad a una acción; quitar el ruido de color y mantener la estructura; feedback silencioso pero preciso.",
+      adv:[
+        {h:"Una sola acción", p:"Arrastra la paloma para añadir. Pocas falsas activaciones, intención clara."},
+        {h:"Enfoque en B/N", p:"Monocromo con jerarquía clara. El foco vuelve a las cifras."},
+        {h:"Local‑first", p:"Guardado local por defecto con exportar/eliminar en cualquier momento; sincronización opcional."}
+      ]
+    },
+    done:{
+      title:"¿Qué hemos logrado?",
+      sub:"Convertimos la idea de una acción en un demo utilizable: del concepto al prototipo.",
+      cards:[
+        {h:"MVP listo · Interacción validada", p:"Arrastrar para añadir validado con umbral; falsas activaciones <1.2% (grupo exp., N=120)."},
+        {h:"Pruebas de usabilidad · 3 rondas", p:"Tres rondas rápidas (N=68). Velocidad de entrada +3.4×; SUS 84/100."},
+        {h:"Local‑first · Control de datos", p:"Guardado local + exportación CSV. Sincronización opcional más adelante. Deshacer/eliminar claro."},
+        {h:"Multidispositivo · PWA", p:"Diseño adaptable para móvil y escritorio; más de 20 resoluciones comunes."}
+      ]
+    },
+    impact:["Usuarios ayudados (beta + early)","Ahorro acumulado visible","Velocidad media de registro ↑","Intención de regreso semanal (autorreporte)"],
+    hero:{ eyebrow:"Blanco & Negro · Cuidado", title:"Convierte la contabilidad en una acción.", sub:"Artesanía tipo Apple en monocromo: espacio en blanco, movimiento contenido, una sola acción principal.", cta:"Entrar al sitio →" }
+  };
+
+  const fr = {
+    brand:"Pigeon Finance", enter:"Entrer sur le site",
+    about:{
+      pill:"À propos", title:"Pigeon Finance",
+      sub:"Application de finances personnelles pour les jeunes. Nous réduisons « noter une dépense » à une seule action pour mieux voir où va l’argent.",
+      cards:[
+        {h:"Conçu pour la vraie vie", p:"Repas, loyer, transport et loisirs : le budget rencontre le quotidien. Capture → insight → ajustement par le chemin le plus court."},
+        {h:"Design mesuré", p:"Noir et blanc, animations subtiles, zéro bruit. L’attention revient aux chiffres."}
+      ]
+    },
+    why:{
+      title:"Pourquoi nous ?",
+      sub:"Réduire la saisie à une action ; retirer le bruit des couleurs et garder la structure ; feedback discret mais précis.",
+      adv:[
+        {h:"Une seule action", p:"Faites glisser le pigeon pour ajouter. Peu de faux déclenchements, intention claire."},
+        {h:"Focus noir & blanc", p:"Monochrome avec hiérarchie nette. Focus sur les chiffres."},
+        {h:"Local‑first", p:"Enregistré localement par défaut, export/suppression à tout moment ; synchro optionnelle."}
+      ]
+    },
+    done:{
+      title:"Ce que nous avons fait",
+      sub:"Transformer l’idée « une action » en démo utilisable, du concept au prototype.",
+      cards:[
+        {h:"MVP prêt · Interaction validée", p:"Drag‑to‑add validé avec seuil ; faux déclenchements <1,2 % (groupe exp., N=120)."},
+        {h:"Tests d’utilisabilité · 3 séries", p:"Trois séries rapides (N=68). Vitesse de saisie +3,4× ; SUS 84/100."},
+        {h:"Local‑first · Contrôle des données", p:"Stockage local + export CSV. Synchro optionnelle. Annulation/suppression claires."},
+        {h:"Multi‑appareils · PWA", p:"Adapté mobile/desktop ; plus de 20 résolutions courantes."}
+      ]
+    },
+    impact:["Utilisateurs aidés (beta + early)","Économies cumulées visibles","Vitesse moyenne de saisie ↑","Intention de revisite hebdo (auto‑déclarée)"],
+    hero:{ eyebrow:"Noir & Blanc · Soigné", title:"Faites de la compta une action.", sub:"Artisanat façon Apple en monochrome : grands espaces, mouvements mesurés, une action principale.", cta:"Entrer →" }
+  };
+
+  const ko = {
+    brand:"Pigeon Finance", enter:"사이트 입장",
+    about:{
+      pill:"소개", title:"Pigeon Finance",
+      sub:"젊은 사용자를 위한 가계 앱. ‘기록’을 한 번의 액션으로 줄여 돈의 흐름을 빠르게 파악하고 더 쉽게 결정할 수 있게 합니다.",
+      cards:[
+        {h:"현실 생활에 맞춤", p:"식비·월세·교통·여가 — 일상의 선택과 예산을 연결. 기록→인사이트→조정을 가장 짧은 경로로."},
+        {h:"절제된 디자인", p:"흑백, 절제된 모션, 노이즈 제로. 시선을 숫자로."}
+      ]
+    },
+    why:{
+      title:"왜 우리인가요?",
+      sub:"기록을 한 번의 액션으로. 색상 노이즈를 줄이고 구조를 유지하며, 조용하지만 정확한 피드백.",
+      adv:[
+        {h:"원액션", p:"비둘기를 드래그하여 추가. 오동작이 적고 의도가 분명."},
+        {h:"흑백 포커스", p:"모노크롬과 명확한 계층. 숫자에 집중."},
+        {h:"로컬‑퍼스트", p:"기본은 로컬 저장, 언제든 내보내기/삭제. 클라우드 동기화는 선택."}
+      ]
+    },
+    done:{
+      title:"지금까지의 진행",
+      sub:"‘원액션’ 아이디어를 사용 가능한 데모로 — 컨셉에서 프로토타입까지.",
+      cards:[
+        {h:"MVP 준비 · 상호작용 검증", p:"드래그 추가 임계값 검증. 오동작 <1.2% (실험군 N=120)."},
+        {h:"사용성 테스트 · 3회", p:"빠른 3회 (총 N=68). 입력 속도 3.4배, SUS 84/100."},
+        {h:"로컬‑퍼스트 · 데이터 제어", p:"로컬 저장 + CSV 내보내기. 동기화는 추후 옵션. 되돌리기/삭제 경로 명확."},
+        {h:"크로스 디바이스 · PWA", p:"모바일/데스크톱 모두 최적화. 20개+ 일반 해상도."}
+      ]
+    },
+    impact:["도운 사용자(베타+얼리)","누적 가시 절감액","평균 입력 속도 ↑","주간 재방문 의향(자기보고)"],
+    hero:{ eyebrow:"흑백 · 크래프트", title:"기록을 한 번의 액션으로.", sub:"모노크롬 Apple 감성: 깨끗한 여백, 절제된 모션, 단 하나의 주요 동작.", cta:"사이트 입장 →" }
+  };
+
+  const dicts = { en, ja, es, fr, ko };
+
+  function applyZh(){
+    if($('.brand')) $('.brand').textContent = zh.brand;
+    if($('.nav a')) $('.nav a').textContent = zh.enter;
+    if($('.about .pill')) $('.about .pill').textContent = zh.about.pill;
+    if($('.about .h1')) $('.about .h1').textContent = zh.about.title;
+    if($('.about .sub')) $('.about .sub').textContent = zh.about.sub;
+    $$('.about .card').forEach((c,i)=>{
+      const d = zh.about.cards[i]||{}; const h=c.querySelector('h4'), p=c.querySelector('p');
+      if(h) h.textContent=d.h||''; if(p) p.textContent=d.p||'';
+    });
+    if($('.prehero .h1')) $('.prehero .h1').textContent = zh.why.title;
+    if($('.prehero .sub')) $('.prehero .sub').textContent = zh.why.sub;
+    $$('.prehero .adv').forEach((c,i)=>{
+      const d = zh.why.adv[i]||{}; const h=c.querySelector('h4'), p=c.querySelector('p');
+      if(h) h.textContent=d.h||''; if(p) p.textContent=d.p||'';
+    });
+    if($('.achv .h1')) $('.achv .h1').textContent = zh.done.title;
+    if($('.achv .sub')) $('.achv .sub').textContent = zh.done.sub;
+    $$('.achv .card').forEach((c,i)=>{
+      const d = zh.done.cards[i]||{}; const h=c.querySelector('h4'), p=c.querySelector('p');
+      if(h) h.textContent=d.h||''; if(p) p.textContent=d.p||'';
+    });
+    $$('.kpi .k').forEach((e,i)=>{ e.textContent = zh.impact[i]||e.textContent; });
+    if($('main.hero .eyebrow')) $('main.hero .eyebrow').textContent = zh.hero.eyebrow;
+    if($('main.hero .title')) $('main.hero .title').textContent = zh.hero.title;
+    if($('main.hero .subtitle')) $('main.hero .subtitle').textContent = zh.hero.sub;
+    if($('main.hero .cta')) $('main.hero .cta').textContent = zh.hero.cta;
+  }
+
+  function applyDict(d){
+    if($('.brand') && d.brand) $('.brand').textContent = d.brand;
+    if($('.nav a') && d.enter) $('.nav a').textContent = d.enter;
+    if($('.about .pill') && d.about?.pill) $('.about .pill').textContent = d.about.pill;
+    if($('.about .h1') && d.about?.title) $('.about .h1').textContent = d.about.title;
+    if($('.about .sub') && d.about?.sub) $('.about .sub').textContent = d.about.sub;
+    $$('.about .card').forEach((c,i)=>{
+      const item = d.about?.cards?.[i]; const h=c.querySelector('h4'), p=c.querySelector('p');
+      if(item){ if(h && item.h) h.textContent=item.h; if(p && item.p) p.textContent=item.p; }
+    });
+    if($('.prehero .h1') && d.why?.title) $('.prehero .h1').textContent = d.why.title;
+    if($('.prehero .sub') && d.why?.sub) $('.prehero .sub').textContent = d.why.sub;
+    $$('.prehero .adv').forEach((c,i)=>{
+      const item = d.why?.adv?.[i]; const h=c.querySelector('h4'), p=c.querySelector('p');
+      if(item){ if(h && item.h) h.textContent=item.h; if(p && item.p) p.textContent=item.p; }
+    });
+    if($('.achv .h1') && d.done?.title) $('.achv .h1').textContent = d.done.title;
+    if($('.achv .sub') && d.done?.sub) $('.achv .sub').textContent = d.done.sub;
+    $$('.achv .card').forEach((c,i)=>{
+      const item = d.done?.cards?.[i]; const h=c.querySelector('h4'), p=c.querySelector('p');
+      if(item){ if(h && item.h) h.textContent=item.h; if(p && item.p) p.textContent=item.p; }
+    });
+    $$('.kpi .k').forEach((e,i)=>{
+      if(d.impact?.[i]) e.textContent = d.impact[i];
+    });
+    if($('main.hero .eyebrow') && d.hero?.eyebrow) $('main.hero .eyebrow').textContent = d.hero.eyebrow;
+    if($('main.hero .title') && d.hero?.title) $('main.hero .title').textContent = d.hero.title;
+    if($('main.hero .subtitle') && d.hero?.sub) $('main.hero .subtitle').textContent = d.hero.sub;
+    if($('main.hero .cta') && d.hero?.cta) $('main.hero .cta').textContent = d.hero.cta;
+  }
+
+  function setLang(lang){
+    document.documentElement.setAttribute('lang', lang);
+    localStorage.setItem('lang', lang);
+    if(lang === 'zh') applyZh();
+    else applyDict(dicts[lang] || en);
+  }
+
+  // Ensure there's a selector (add if missing)
+  let sel = document.getElementById('langSel');
+  if(!sel){
+    const bar = $('.nav') || document.body;
+    const wrap = document.createElement('div'); wrap.className='i18n-switch';
+    wrap.innerHTML = '<select id="langSel">\
+<option value="zh">简体中文</option>\
+<option value="en">English</option>\
+<option value="ja">日本語</option>\
+<option value="es">Español</option>\
+<option value="fr">Français</option>\
+<option value="ko">한국어</option>\
+</select>';
+    bar.appendChild(wrap);
+    sel = document.getElementById('langSel');
+  }else{
+    // If exists but has fewer options, refresh options
+    const wanted = ['zh','en','ja','es','fr','ko'];
+    const have = Array.from(sel.options).map(o=>o.value);
+    if(wanted.some(v=>!have.includes(v))){
+      sel.innerHTML = '\
+<option value="zh">简体中文</option>\
+<option value="en">English</option>\
+<option value="ja">日本語</option>\
+<option value="es">Español</option>\
+<option value="fr">Français</option>\
+<option value="ko">한국어</option>';
+    }
+  }
+
+  const init = localStorage.getItem('lang') || 'zh';
+  sel.value = init;
+  setLang(init);
+  sel.addEventListener('change', e=> setLang(e.target.value));
+})();
+</script>
+</body>
+</html>

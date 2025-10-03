@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>鸽子金融 · 订阅权益</title>
+<meta content="黑白极简 · Apple 风订阅页面。清晰展示 Free 与 Pro 权益、升级理由与常见问题。" name="description"/>
+<meta content="light dark" name="color-scheme"/>
+<style>
+    :root{
+      --bg:#0a0a0a; --ink:#f5f5f7; --sub:#a1a1aa; --line:#222326;
+      --glass:rgba(255,255,255,.06); --glass-b:rgba(255,255,255,.12);
+      --r:18px; --shadow:0 30px 80px rgba(0,0,0,.45);
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#ffffff; --ink:#0a0a0a; --sub:#6b7280; --line:#e7e7ea; --glass:rgba(0,0,0,.04); --glass-b:rgba(0,0,0,.08) }
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{ margin:0; background:var(--bg); color:var(--ink);
+      font:16px/1.6 ui-sans-serif, system-ui, -apple-system, "SF Pro", Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei";
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    a{ color:inherit; text-decoration:none }
+    .container{ width:min(1080px,92%); margin:0 auto }
+
+    /* Nav (minimal) */
+    .nav{ position:sticky; top:0; z-index:40; background:color-mix(in oklab, var(--bg) 80%, transparent);
+      backdrop-filter:saturate(1.1) blur(10px); border-bottom:1px solid var(--line); }
+    .nav .inner{ display:flex; align-items:center; justify-content:space-between; padding:12px 0 }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:800 }
+    .mark{ width:24px; height:24px; border-radius:6px; border:1px solid var(--line); position:relative; overflow:hidden }
+    .mark::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, #fff, #ddd); mix-blend-mode:soft-light; opacity:.45 }
+    .nav a{ padding:8px 10px; border-radius:10px }
+    .nav a:hover{ background:var(--glass) }
+    .btn-min{ border:1px solid var(--line); padding:8px 12px; border-radius:12px }
+
+    /* Hero */
+    header{ padding:76px 0 36px; text-align:center; background:
+      radial-gradient(1000px 520px at 80% -200px, color-mix(in oklab, var(--ink) 9%, transparent), transparent 60%); }
+    .eyebrow{ font-weight:700; letter-spacing:.24em; text-transform:uppercase; font-size:12px; color:var(--sub) }
+    .title{ font-size:clamp(40px,7vw,86px); line-height:1.02; letter-spacing:-.03em; margin:10px 0 12px }
+    .subtitle{ color:var(--sub); margin:0 auto 10px; max-width:720px }
+
+    /* Plans */
+    .plans{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px }
+    .plan{ background:var(--glass); border:1px solid var(--glass-b); border-radius:var(--r); padding:22px; box-shadow:0 12px 28px rgba(0,0,0,.25) }
+    .plan h3{ margin:0 0 6px }
+    .price{ font-size:36px; font-weight:900; margin:4px 0 10px }
+    .ul{ margin:0; padding:0; list-style:none }
+    .ul li{ display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--line) }
+    .ul li:first-child{ border-top:0 }
+    .check{ width:18px; height:18px; border-radius:50%; border:1px solid var(--line); display:inline-grid; place-items:center; flex:0 0 auto }
+    .check::after{ content:""; width:10px; height:10px; border-radius:50%; background:var(--ink) }
+    .muted{ color:var(--sub) }
+    .badge{ display:inline-block; padding:4px 8px; border:1px solid var(--line); border-radius:999px; font-size:12px; color:var(--sub) }
+    .cta{ display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:14px; border:1px solid var(--line);
+      background:var(--ink); color:var(--bg); font-weight:800; text-decoration:none }
+    .cta .arr{ transition:transform .35s cubic-bezier(.2,.8,.2,1) }
+    .cta:hover .arr{ transform:translateX(6px) }
+
+    /* Compare table */
+    .compare{ margin-top:36px; border:1px solid var(--line); border-radius:16px; overflow:hidden }
+    .row{ display:grid; grid-template-columns:1.2fr 1fr 1fr; }
+    .cell{ padding:12px 14px; border-bottom:1px solid var(--line) }
+    .row.head .cell{ font-weight:800; background:color-mix(in oklab, var(--ink) 6%, transparent) }
+    .row .cell.center{ text-align:center }
+
+    /* FAQ */
+    .faq{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:28px }
+    .qa{ background:var(--glass); border:1px solid var(--glass-b); border-radius:16px; padding:18px }
+    @media (max-width:980px){
+      .plans{ grid-template-columns:1fr }
+      .faq{ grid-template-columns:1fr }
+      .row{ grid-template-columns:1fr 1fr }
+      .row .cell:first-child{ grid-column:1 / -1; font-weight:700 }
+    }
+
+    /* Modal */
+    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:60 }
+    .modal{ width:min(560px,92%); background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow) }
+    .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px }
+    .btn{ border:1px solid var(--line); padding:10px 14px; border-radius:12px; background:transparent; color:var(--ink) }
+    .btn.primary{ background:var(--ink); color:var(--bg) }
+
+    footer{ color:var(--sub); border-top:1px solid var(--line); padding:24px 0; margin-top:40px }
+  </style>
+<style>
+      .i18n-switch select{ border:1px solid #dcdde3; background:#fff; color:#111; padding:6px 8px; border-radius:10px }
+      .nav .i18n-switch{ margin-left:12px }
+      @media (prefers-color-scheme: dark){
+        .i18n-switch select{ background:#0f172a; color:#e5e7eb; border-color:#303544 }
+      }
+    </style>
+</head>
+<body>
+<div class="nav">
+<div class="container inner">
+<div class="brand"><a href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html" style="color:inherit;text-decoration:none">鸽子金融</a></div>
+<div>
+<a class="btn-min" href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html">返回官网</a>
+</div>
+</div>
+</div>
+<header>
+<div class="container">
+<div class="eyebrow">Membership · 订阅权益</div>
+<h1 class="title">升级到 Pro，保留极简的同时更强大。</h1>
+<p class="subtitle">Free 已够轻快；Pro 在关键时刻帮你“看得更清、控得更稳”。</p>
+<div class="plans">
+<div class="plan">
+<h3>Free</h3>
+<div class="price">¥0</div>
+<ul class="ul">
+<li><span class="check"></span><span>最少必填 · 快速记一笔</span></li>
+<li><span class="check"></span><span>三大指标 &amp; 轻量分析</span></li>
+<li><span class="check"></span><span>本地优先，CSV/JSON 导出</span></li>
+</ul>
+</div>
+<div class="plan">
+<div class="badge">推荐</div>
+<h3>Pro</h3>
+<div class="price">¥12 / 月</div>
+<ul class="ul">
+<li><span class="check"></span><span>预算阈值提醒 · 规则自动分类</span></li>
+<li><span class="check"></span><span>多设备同步（可选） · 离线可用</span></li>
+<li><span class="check"></span><span>周期性账目 · 自定义分类 · 多钱包</span></li>
+<li><span class="check"></span><span>高级搜索/筛选/导出 · 优先支持</span></li>
+</ul>
+<div style="margin-top:14px">
+<a class="cta" id="openSub">开通 Pro <span class="arr">→</span></a>
+</div>
+<div class="muted" style="margin-top:8px">学生计划 -50%（验证邮箱）</div>
+</div>
+</div>
+<!-- quick compare -->
+<div class="compare">
+<div class="row head">
+<div class="cell">功能</div>
+<div class="cell center">Free</div>
+<div class="cell center">Pro</div>
+</div>
+<div class="row">
+<div class="cell">最少必填 · 快速记一笔</div>
+<div class="cell center">✓</div>
+<div class="cell center">✓</div>
+</div>
+<div class="row">
+<div class="cell">三大指标 &amp; 轻量分析</div>
+<div class="cell center">✓</div>
+<div class="cell center">✓</div>
+</div>
+<div class="row">
+<div class="cell">预算阈值提醒 · 自动分类</div>
+<div class="cell center">—</div>
+<div class="cell center">✓</div>
+</div>
+<div class="row">
+<div class="cell">周期性账目 · 自定义分类</div>
+<div class="cell center">—</div>
+<div class="cell center">✓</div>
+</div>
+<div class="row">
+<div class="cell">多设备同步（可选） · 多钱包/多币种</div>
+<div class="cell center">—</div>
+<div class="cell center">✓</div>
+</div>
+<div class="row">
+<div class="cell">高级搜索/筛选/导出 · 优先支持</div>
+<div class="cell center">—</div>
+<div class="cell center">✓</div>
+</div>
+</div>
+<!-- FAQ -->
+<div class="faq">
+<div class="qa">
+<h4>可以随时取消吗？</h4>
+<p>可以。随时在“帐户 &amp; 订阅”里取消，剩余周期照常使用；到期后不再续费，数据保留在本地。</p>
+</div>
+<div class="qa">
+<h4>没有网络也能用吗？</h4>
+<p>可以。默认本地优先，离线可用；若开启同步，恢复网络后会自动对账。</p>
+</div>
+<div class="qa">
+<h4>如何申请学生价？</h4>
+<p>使用学校邮箱注册或在设置中上传学生证明即可。</p>
+</div>
+<div class="qa">
+<h4>数据如何导出？</h4>
+<p>在“记录/导出”里可导出 CSV/JSON；Pro 用户支持自定义筛选导出。</p>
+</div>
+</div>
+</div>
+</header>
+<footer>
+<div class="container" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap">
+<div>© 2025 鸽子金融</div>
+<div><a class="btn-min" href="landing_homepage_multilang_FULL_i18n_LINKED_DRAGFIX.html#pricing">返回定价</a></div>
+</div>
+</footer>
+<!-- Modal (demo) -->
+<div aria-hidden="true" class="overlay" id="overlay">
+<div aria-modal="true" class="modal" role="dialog">
+<h3>开通 Pro（演示）</h3>
+<p class="muted">这里会对接真实支付。演示环境中点击“确认开通”仅展示成功效果，不会产生费用。</p>
+<div class="actions">
+<button class="btn" id="close">取消</button>
+<button class="btn primary" id="confirm">确认开通</button>
+</div>
+</div>
+</div>
+<script>
+(function(){
+  const $ = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+
+  function applyDict(d){
+    if($('.brand') && d.brand) $('.brand').textContent = d.brand;
+    if($('.nav .inner a.btn-min') && d.back) $('.nav .inner a.btn-min').textContent = d.back;
+
+    if($('header .eyebrow') && d.header?.eyebrow) $('header .eyebrow').textContent = d.header.eyebrow;
+    if($('header .title')   && d.header?.title)   $('header .title').textContent   = d.header.title;
+    if($('header .subtitle')&& d.header?.sub)     $('header .subtitle').textContent= d.header.sub;
+
+    const h3 = $$('.plan h3');
+    if(h3[0] && d.plan?.free) h3[0].textContent = d.plan.free;
+    if(h3[1] && d.plan?.pro)  h3[1].textContent = d.plan.pro;
+    const badges = $$('.plan .badge');
+    if(badges[1] && d.plan?.badge) badges[1].textContent = d.plan.badge;
+    const prices = $$('.plan .price');
+    if(prices[1] && d.plan?.pricePro) prices[1].textContent = d.plan.pricePro;
+
+    const l0 = $$('.plan')[0]?.querySelectorAll('li'); 
+    if(l0 && d.plan?.lis0) Array.from(l0).forEach((li,i)=>{ if(d.plan.lis0[i]) li.textContent = d.plan.lis0[i]; });
+    const l1 = $$('.plan')[1]?.querySelectorAll('li'); 
+    if(l1 && d.plan?.lis1) Array.from(l1).forEach((li,i)=>{ if(d.plan.lis1[i]) li.textContent = d.plan.lis1[i]; });
+
+    const head = $$('.compare .row.head .cell');
+    if(d.compare?.head) d.compare.head.forEach((v,i)=>{ if(head[i]) head[i].textContent=v; });
+    const rows = $$('.compare .row:not(.head) .cell:first-child');
+    if(d.compare?.rows) d.compare.rows.forEach((v,i)=>{ if(rows[i]) rows[i].textContent=v; });
+
+    const qa = $$('.faq .qa');
+    if(d.faq) qa.forEach((x,i)=>{ const pair = d.faq[i]; if(!pair) return; const h=x.querySelector('h4'), p=x.querySelector('p'); if(h && pair[0]) h.textContent=pair[0]; if(p && pair[1]) p.textContent=pair[1]; });
+
+    if($('#openSub') && d.modal?.open)   $('#openSub').textContent = d.modal.open;
+    if($('#close')   && d.modal?.cancel) $('#close').textContent   = d.modal.cancel;
+    if($('#confirm') && d.modal?.confirm)$('#confirm').textContent = d.modal.confirm;
+  }
+
+  const DICTS = {
+    en: {"brand": "Pigeon Finance", "back": "Back to site", "header": {"eyebrow": "Membership · Benefits", "title": "Upgrade to Pro — stay minimal, gain power.", "sub": "Free is already fast; Pro helps you see clearer and stay in control when it matters."}, "plan": {"free": "Free", "pro": "Pro", "badge": "Recommended", "pricePro": "¥12 / month", "lis0": ["Minimal Quick Add", "Three KPIs & light analysis", "Local-first · CSV/JSON export"], "lis1": ["Budget thresholds · rule-based auto categorisation", "Multi-device sync (optional) · offline", "Recurring items · custom categories · multi-wallet", "Advanced search/filter/export · priority support"]}, "compare": {"head": ["Feature", "Free", "Pro"], "rows": ["Minimal Quick Add", "Three KPIs & light analysis", "Budget thresholds · auto categorisation", "Recurring items · custom categories", "Multi-device sync (optional) · multi-wallet/currency", "Advanced search/filter/export · priority support"]}, "faq": [["Can I cancel anytime?", "Yes. Cancel anytime in ‘Account & Subscription’. You can keep using Pro until expiry; data stays local."], ["Does it work offline?", "Yes. Local-first by default. If sync is on, reconciliation happens once online."], ["How to get the student plan?", "Sign up with a school email or upload proof in Settings."], ["How do I export data?", "Export CSV/JSON under ‘Records/Export’. Pro supports filtered export."]], "modal": {"open": "Start Pro →", "cancel": "Cancel", "confirm": "Confirm"}},
+    ja: {"brand": "Pigeon Finance", "back": "サイトへ戻る", "header": {"eyebrow": "メンバーシップ・特典", "title": "Pro にアップグレード — ミニマルのまま強く。", "sub": "Free でも十分速い。Pro で要所をよりクリアに、よりコントロール。"}, "plan": {"free": "Free", "pro": "Pro", "badge": "おすすめ", "pricePro": "¥12 / 月", "lis0": ["最小のクイック追加", "3つのKPI ＆ ライト分析", "ローカルファースト・CSV/JSON エクスポート"], "lis1": ["予算しきい値・ルール分類", "マルチデバイス同期（任意）・オフライン", "定期項目・カスタムカテゴリ・マルチウォレット", "高度な検索/フィルタ/エクスポート・優先サポート"]}, "compare": {"head": ["機能", "Free", "Pro"], "rows": ["最小のクイック追加", "3つのKPIとライト分析", "予算しきい値・自動分類", "定期項目・カスタムカテゴリ", "マルチデバイス同期（任意）・多ウォレット/通貨", "高度な検索/フィルタ/エクスポート・優先サポート"]}, "faq": [["いつでも解約できますか？", "はい。「アカウントと購読」でいつでも解約。期間終了までは Pro を利用できます。データは端末に保持。"], ["オフラインでも使えますか？", "はい。既定でローカルファースト。同期をオンにした場合は、オンライン復帰後に照合されます。"], ["学生プランの取得方法は？", "学校メールで登録、または設定で学生証明をアップロード。"], ["データのエクスポート方法は？", "「記録/エクスポート」から CSV/JSON を出力。Pro はフィルタ付きエクスポートに対応。"]], "modal": {"open": "Pro を開始 →", "cancel": "キャンセル", "confirm": "確認"}},
+    es: {"brand": "Pigeon Finance", "back": "Volver al sitio", "header": {"eyebrow": "Membresía · Beneficios", "title": "Pásate a Pro — minimalista y potente.", "sub": "Free ya es rápido; Pro te da claridad y control donde importa."}, "plan": {"free": "Gratis", "pro": "Pro", "badge": "Recomendado", "pricePro": "¥12 / mes", "lis0": ["Registro rápido mínimo", "Tres KPI y análisis ligero", "Local‑first · exportación CSV/JSON"], "lis1": ["Umbrales de presupuesto · categorización por reglas", "Sincronización multidispositivo (opcional) · offline", "Recurrentes · categorías personalizadas · multi‑billetera", "Búsqueda/filtro/exportación avanzadas · soporte prioritario"]}, "compare": {"head": ["Función", "Free", "Pro"], "rows": ["Registro rápido mínimo", "Tres KPI y análisis ligero", "Umbrales de presupuesto · categorización automática", "Recurrentes · categorías personalizadas", "Sincronización multidispositivo (opcional) · multi‑billetera/moneda", "Búsqueda/filtro/exportación avanzadas · soporte prioritario"]}, "faq": [["¿Puedo cancelar en cualquier momento?", "Sí. Cancela cuando quieras en ‘Cuenta y suscripción’. Podrás usar Pro hasta que termine el período; los datos siguen locales."], ["¿Funciona sin internet?", "Sí. Local‑first por defecto. Si activas la sincronización, la conciliación ocurre al reconectar."], ["¿Cómo obtengo el plan para estudiantes?", "Regístrate con email escolar o sube una prueba en Ajustes."], ["¿Cómo exporto mis datos?", "Exporta CSV/JSON en ‘Registros/Exportar’. Pro permite exportación filtrada."]], "modal": {"open": "Empezar Pro →", "cancel": "Cancelar", "confirm": "Confirmar"}},
+    fr: {"brand": "Pigeon Finance", "back": "Retour au site", "header": {"eyebrow": "Abonnement · Avantages", "title": "Passez à Pro — minimal mais puissant.", "sub": "La version Free est déjà rapide ; Pro apporte clarté et contrôle quand il faut."}, "plan": {"free": "Gratuit", "pro": "Pro", "badge": "Recommandé", "pricePro": "¥12 / mois", "lis0": ["Ajout rapide minimal", "Trois KPI & analyse légère", "Local‑first · export CSV/JSON"], "lis1": ["Seuils de budget · catégorisation par règles", "Synchronisation multi‑appareils (option) · hors‑ligne", "Éléments récurrents · catégories perso · multi‑portefeuille", "Recherche/filtre/export avancés · support prioritaire"]}, "compare": {"head": ["Fonction", "Free", "Pro"], "rows": ["Ajout rapide minimal", "Trois KPI & analyse légère", "Seuils de budget · catégorisation auto", "Éléments récurrents · catégories perso", "Synchronisation multi‑appareils (option) · multi‑portefeuille/monnaie", "Recherche/filtre/export avancés · support prioritaire"]}, "faq": [["Puis‑je résilier à tout moment ?", "Oui. Dans « Compte & Abonnement ». Vous conservez Pro jusqu’à l’échéance ; les données restent locales."], ["Fonctionne‑t‑il hors‑ligne ?", "Oui. Local‑first par défaut. Si la synchro est active, la réconciliation se fait au retour en ligne."], ["Comment obtenir le tarif étudiant ?", "Inscrivez‑vous avec un email scolaire ou téléversez une preuve dans les réglages."], ["Comment exporter mes données ?", "Export CSV/JSON dans « Enregistrements/Exporter ». Pro permet l’export filtré."]], "modal": {"open": "Commencer Pro →", "cancel": "Annuler", "confirm": "Confirmer"}},
+    ko: {"brand": "Pigeon Finance", "back": "사이트로 돌아가기", "header": {"eyebrow": "멤버십 · 혜택", "title": "Pro 업그레이드 — 미니멀은 그대로, 더 강하게.", "sub": "Free 도 충분히 빠릅니다. Pro 는 중요한 순간에 더 선명한 통제력을 제공합니다."}, "plan": {"free": "무료", "pro": "Pro", "badge": "추천", "pricePro": "¥12 / 월", "lis0": ["최소한의 퀵 추가", "세 가지 KPI & 라이트 분석", "로컬‑퍼스트 · CSV/JSON 내보내기"], "lis1": ["예산 임계치 · 규칙 기반 자동 분류", "멀티디바이스 동기화(선택) · 오프라인", "반복 항목 · 사용자 지정 카테고리 · 멀티월릿", "고급 검색/필터/내보내기 · 우선 지원"]}, "compare": {"head": ["기능", "Free", "Pro"], "rows": ["최소한의 퀵 추가", "세 가지 KPI & 라이트 분석", "예산 임계치 · 자동 분류", "반복 항목 · 사용자 지정 카테고리", "멀티디바이스 동기화(선택) · 멀티월릿/통화", "고급 검색/필터/내보내기 · 우선 지원"]}, "faq": [["언제든 취소할 수 있나요?", "네. ‘계정 & 구독’에서 언제든 취소 가능. 기간 종료까지 Pro 사용 가능하며 데이터는 로컬에 남습니다."], ["오프라인에서도 되나요?", "네. 기본은 로컬‑퍼스트. 동기화가 켜져 있으면 온라인 복귀 시 정합됩니다."], ["학생 요금제는 어떻게 받나요?", "학교 이메일로 가입하거나, 설정에서 학생증명 업로드."], ["데이터는 어떻게 내보내나요?", "‘기록/내보내기’에서 CSV/JSON 내보내기. Pro 는 필터된 내보내기를 지원."]], "modal": {"open": "Pro 시작 →", "cancel": "취소", "confirm": "확인"}}
+  };
+
+  function setLang(lang){
+    document.documentElement.setAttribute('lang', lang);
+    localStorage.setItem('lang', lang);
+    if(lang==='zh') { location.reload(); return; }
+    applyDict(DICTS[lang] || DICTS.en);
+  }
+
+  // Inject language selector if missing
+  let sel = document.getElementById('langSel');
+  if(!sel){
+    const wrap = document.querySelector('.nav .inner') || document.querySelector('.nav') || document.body;
+    const node = document.createElement('div'); node.className='i18n-switch';
+    node.innerHTML = '<select id="langSel"><option value="zh">简体中文</option><option value="en">English</option><option value="ja">日本語</option><option value="es">Español</option><option value="fr">Français</option><option value="ko">한국어</option></select>';
+    wrap.appendChild(node); sel = document.getElementById('langSel');
+  }
+  const init = localStorage.getItem('lang') || 'zh';
+  sel.value = init;
+  if(init!=='zh') applyDict(DICTS[init] || DICTS.en);
+  sel.addEventListener('change', e=> setLang(e.target.value));
+})();
+</script>
+</body>
+</html>
